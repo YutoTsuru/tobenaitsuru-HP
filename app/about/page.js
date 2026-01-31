@@ -1,6 +1,9 @@
 import { getContent } from '../../lib/utils';
 import styles from './page.module.css';
 
+// ページキャッシュを無効化（常に最新データを取得）
+export const revalidate = 0;
+
 export default async function About() {
     const content = await getContent();
     const { title, content: aboutContent, profile } = content?.about || {};
