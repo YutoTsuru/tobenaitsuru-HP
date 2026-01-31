@@ -1,4 +1,4 @@
-import { getContent } from '../../lib/utils';
+import { getContent } from '../../../lib/utils';
 import WorksEditor from './WorksEditor';
 
 export default async function WorksAdmin() {
