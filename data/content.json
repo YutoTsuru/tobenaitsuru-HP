@@ -1,39 +1,39 @@
 {
-    "home": {
-        "title": "Tobenaitsuru",
-        "subtitle": "Thinking, Designing, Making"
-    },
-    "about": {
-        "title": "About Me",
-        "content": "ものづくりに興味があり、日々技術を磨いています。無機質な機械と有機的な思考の融合を目指しています。",
-        "profile": "Software Engineer / Designer"
-    },
-    "skills": {
-        "title": "My Skills",
-        "items": [
-            {
-                "name": "JavaScript/React/Next.js",
-                "level": "Advanced"
-            },
-            {
-                "name": "Python",
-                "level": "Intermediate"
-            },
-            {
-                "name": "Design",
-                "level": "Intermediate"
-            }
-        ]
-    },
-    "works": {
-        "title": "Works",
-        "status": "Coming Soon",
-        "items": []
-    },
-    "contact": {
-        "title": "Contact",
-        "email": "contact@example.com",
-        "github": "https://github.com/example",
-        "twitter": "https://twitter.com/example"
-    }
+  "home": {
+    "title": "Tobenaitsuru",
+    "subtitle": "Thinking, Designing, Making"
+  },
+  "about": {
+    "title": "About Me",
+    "content": "ものづくりに興味があり、日々技術を磨いています。無機質な機械と有機的な思考の融合を目指しています。",
+    "profile": "Software Engineer / Designer"
+  },
+  "skills": {
+    "title": "My Skills",
+    "items": [
+      {
+        "name": "JavaScript/React/Next.js",
+        "level": "Advanced"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Design",
+        "level": "Intermediate"
+      }
+    ]
+  },
+  "works": {
+    "title": "Works",
+    "status": "Coming Soon",
+    "items": []
+  },
+  "contact": {
+    "title": "Contact",
+    "email": "turu.notarobot@gmail.com",
+    "github": "https://github.com/YutoTsuru",
+    "twitter": "https://x.com/SETU________"
+  }
 }
