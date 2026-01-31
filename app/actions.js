@@ -4,18 +4,19 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { saveContent as saveContentToFile } from '../lib/utils';
 
-export async function login(formData) {
+export async function login(prevState, formData) {
     const password = formData.get('password');
 
-    // Simple hardcoded check
-    if (password === 'password') {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'password';
+
+    if (password === adminPassword) {
         (await cookies()).set('admin_session', 'true', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: '/'
         });
-        redirect('/admin');
+        redirect('/admin/dashboard');
     } else {
         return { error: 'Invalid password' };
     }
