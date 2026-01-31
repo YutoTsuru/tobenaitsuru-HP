@@ -2,6 +2,9 @@ import { getContent } from '../../lib/utils';
 import Gear from '../../components/Gear';
 import styles from './page.module.css';
 
+// ページキャッシュを無効化（常に最新データを取得）
+export const revalidate = 0;
+
 export default async function Works() {
     const content = await getContent();
     const { title, status, items } = content?.works || { items: [] };
