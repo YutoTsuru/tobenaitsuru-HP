@@ -1,0 +1,46 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.3s ease;
+}
+
+.item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.label {
+    font-size: 0.9rem;
+    color: var(--c-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.link {
+    font-size: 1.2rem;
+    color: var(--c-accent-1);
+    font-weight: 500;
+}

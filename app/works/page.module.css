@@ -1,0 +1,30 @@
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.statusBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+}
+
+.statusText {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    color: var(--c-text-secondary);
+    letter-spacing: 0.1em;
+}
+
+.gearWrapper {
+    opacity: 0.3;
+}

@@ -1,0 +1,39 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--c-accent-2);
+    display: inline-block;
+    padding-bottom: 0.5rem;
+}
+
+.section {
+    margin-bottom: 3rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.heading {
+    font-size: 1.5rem;
+    color: var(--c-accent-1);
+    margin-bottom: 1rem;
+}
+
+.text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--c-text-primary);
+    white-space: pre-wrap;
+}
+
+.profileBox {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--c-accent-3);
+    margin-bottom: 2rem;
+}
