@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { cookies } from 'next/headers';
 import { getIronSession } from 'iron-session';
-import { saveContent } from '../../../lib/utils'; // 既存の保存関数（KV更新+新規バックアップ）
+import { saveContent } from '../../../../lib/utils'; // 既存の保存関数（KV更新+新規バックアップ）
 
 const BACKUP_DIR = path.join(process.cwd(), 'data', 'backups');
 

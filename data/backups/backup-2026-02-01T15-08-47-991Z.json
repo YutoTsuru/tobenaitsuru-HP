@@ -1,0 +1,56 @@
+{
+  "home": {
+    "title": "Tobenaitsuru",
+    "subtitle": "Thinking, Designing, Making"
+  },
+  "about": {
+    "title": "About Me",
+    "content": "幼い頃から形あるものを作ることに魅了され、現在はソフトウェアとハードウェアを横断したものづくりに取り組んでいます。\n無機質な機械に、有機的な思考・対話・意思を宿すことをテーマに、\nWeb、AI、IoT、ロボット開発を通して「人と共にある技術」を探究しています。",
+    "profile": "Student Software Engineer / IoT Enthusiast"
+  },
+  "skills": {
+    "title": "My Skills",
+    "items": [
+      {
+        "name": "JavaScript/React/Next.js",
+        "level": "Advanced"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Design",
+        "level": "Intermediate"
+      }
+    ]
+  },
+  "works": {
+    "title": "Works",
+    "status": "Coming Soon",
+    "items": []
+  },
+  "contact": {
+    "title": "Contact",
+    "email": "turu.notarobot@gmail.com",
+    "github": "https://github.com/YutoTsuru",
+    "twitter": "https://x.com/SETU________"
+  },
+  "makes": {
+    "title": "Makes",
+    "items": [
+      {
+        "title": "書籍のジャンル分類",
+        "description": "機械学習で分類モデルを作り",
+        "thumbnail": "/uploads/1769957411395_スクリーンショット_2026-02-01_232837.png",
+        "externalUrl": "https://book-category-ai.streamlit.app/",
+        "isPublished": true,
+        "id": "8ec74e22-8133-4527-bfe1-86c432616e40",
+        "techStack": [
+          "Python",
+          "FastAPI"
+        ]
+      }
+    ]
+  }
+}
