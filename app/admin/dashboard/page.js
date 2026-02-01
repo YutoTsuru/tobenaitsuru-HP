@@ -42,7 +42,7 @@ export default async function Dashboard() {
 
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <Gear size={40} duration={10} color="var(--c-accent-2)" />
+                        <Gear size={40} duration={15} color="var(--c-accent-2)" />
                         <h2 className={styles.cardTitle}>Skills</h2>
                     </div>
                     <div className={styles.cardContent}>
@@ -54,9 +54,9 @@ export default async function Dashboard() {
                             ))}
                         </ul>
                     </div>
-                    <Link href="/admin/edit/skills" className={styles.editButton}>
-                        Manage Skills
-                    </Link>
+                    <div className={styles.comingSoon}>
+                        🚧 Edit feature coming soon
+                    </div>
                 </div>
 
                 <div className={styles.card}>
@@ -69,9 +69,9 @@ export default async function Dashboard() {
                         <p><strong>Status:</strong> <span className={styles.status}>{content?.works?.status}</span></p>
                         <p><strong>Items:</strong> {content?.works?.items?.length || 0} projects</p>
                     </div>
-                    <Link href="/admin/edit/works" className={styles.editButton}>
-                        Manage Works
-                    </Link>
+                    <div className={styles.comingSoon}>
+                        🚧 Edit feature coming soon
+                    </div>
                 </div>
 
                 <div className={styles.card}>
