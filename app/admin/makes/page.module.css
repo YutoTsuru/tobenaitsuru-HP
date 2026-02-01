@@ -1,10 +1,4 @@
-.container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-bottom: 100px;
-    /* Space for floating button */
-}
+/* Existing styles... */
 
 .header {
     display: flex;
@@ -15,119 +9,113 @@
 
 .pageTitle {
     font-size: 2rem;
-    color: var(--c-text-primary);
-    font-weight: 700;
+    color: var(--c-primary);
 }
 
 .backButton {
-    background: transparent;
-    border: 1px solid var(--c-text-secondary);
-    color: var(--c-text-primary);
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    background: transparent;
     cursor: pointer;
-    transition: all 0.3s ease;
+    color: var(--c-text-secondary);
 }
 
-.backButton:hover {
-    background: rgba(255, 255, 255, 0.1);
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
+    background: var(--c-bg-secondary);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
     padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .cardTitle {
-    font-size: 1.2rem;
     margin-bottom: 1.5rem;
-    color: #333;
-    border-bottom: 2px solid var(--c-accent-1);
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--c-border);
     padding-bottom: 0.5rem;
-    display: inline-block;
 }
 
 .formGroup {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #444;
+    font-weight: 500;
 }
 
 .input,
 .textarea {
     width: 100%;
     padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    background: var(--c-bg-primary);
+    color: var(--c-text-primary);
     font-size: 1rem;
-    transition: border-color 0.3s;
 }
 
 .textarea {
-    min-height: 80px;
+    height: 100px;
     resize: vertical;
 }
 
-.input:focus,
-.textarea:focus {
-    border-color: var(--c-accent-1);
-    outline: none;
+/* File Input Style */
+.fileInput {
+    margin-bottom: 0.5rem;
+    width: 100%;
 }
 
 .imageUploadWrapper {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.orDivider {
-    color: #888;
-    font-size: 0.9rem;
-    font-weight: bold;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .preview {
     margin-top: 1rem;
-    width: 200px;
-    height: 120px;
-    border-radius: 8px;
+    max-width: 200px;
+    border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #ddd;
-    background: #f5f5f5;
+    border: 1px solid var(--c-border);
 }
 
 .preview img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    display: block;
 }
 
 .addButton {
-    background: var(--c-text-primary);
-    color: var(--c-background);
+    width: 100%;
+    padding: 1rem;
+    background: var(--c-accent-1);
+    color: white;
     border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 6px;
+    border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
-    width: 100%;
-    margin-top: 1rem;
-    transition: opacity 0.3s;
+    transition: background 0.2s;
 }
 
 .addButton:disabled {
-    opacity: 0.5;
+    background: var(--c-disabled);
     cursor: not-allowed;
 }
 
+.addButton:hover:not(:disabled) {
+    background: var(--c-accent-1-hover);
+}
+
+/* Item List Styles */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -135,40 +123,39 @@
 }
 
 .itemCard {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--c-bg-secondary);
+    border: 1px solid var(--c-border);
     border-radius: 8px;
-    padding: 1rem;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .itemHeader {
+    padding: 0.8rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid var(--c-border);
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .itemTitleInput {
-    flex: 1;
-    padding: 0.5rem;
-    font-weight: bold;
-    border: 1px solid transparent;
-    border-bottom: 1px solid #ddd;
     background: transparent;
-}
-
-.itemTitleInput:focus {
-    border-bottom-color: var(--c-accent-1);
-    outline: none;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 100%;
+    margin-right: 0.5rem;
 }
 
 .deleteBtn {
-    background: #ff4d4d;
+    background: #ff4444;
     color: white;
     border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -176,48 +163,64 @@
 }
 
 .itemBody {
+    padding: 1rem;
     display: flex;
-    flex-direction: column;
     gap: 1rem;
 }
 
 .thumbnailSection {
-    position: relative;
-    height: 150px;
-    background: #f0f0f0;
-    border-radius: 6px;
-    overflow: hidden;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .itemThumb {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16/9;
     object-fit: cover;
+    border-radius: 4px;
+    background: #eee;
 }
 
 .noImage {
     width: 100%;
-    height: 100%;
+    aspect-ratio: 16/9;
+    background: #eee;
+    color: #888;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #999;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.replaceFileBtn {
+    font-size: 0.8rem;
+}
+
+.detailsSection {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .miniInput,
 .miniTextarea {
     width: 100%;
     padding: 0.5rem;
-    font-size: 0.9rem;
-    border: 1px solid #eee;
+    border: 1px solid var(--c-border);
     border-radius: 4px;
-    margin-top: 0.5rem;
+    font-size: 0.9rem;
 }
 
 .miniTextarea {
-    min-height: 60px;
+    height: 60px;
+    resize: none;
 }
 
+/* Floating Save Button */
 .floatingSave {
     position: fixed;
     bottom: 2rem;
@@ -226,15 +229,15 @@
 }
 
 .saveButton {
-    background: var(--c-accent-1);
+    padding: 1rem 2rem;
+    background: var(--c-primary);
     color: white;
     border: none;
-    padding: 1rem 3rem;
     border-radius: 50px;
-    font-size: 1.1rem;
+    /* Pill shape */
     font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 26, 0.4);
     transition: transform 0.2s;
 }
 
@@ -242,22 +245,7 @@
     transform: translateY(-2px);
 }
 
-.message {
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    text-align: center;
-    font-weight: 600;
-}
-
-.success {
-    background: rgba(0, 242, 96, 0.1);
-    color: #00aa55;
-    border: 1px solid rgba(0, 242, 96, 0.3);
-}
-
-.error {
-    background: rgba(255, 0, 85, 0.1);
-    color: #ff0055;
-    border: 1px solid rgba(255, 0, 85, 0.3);
+.saveButton:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }

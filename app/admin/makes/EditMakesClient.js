@@ -88,7 +88,40 @@ export default function EditMakesClient({ initialData, fullContent }) {
         ));
     };
 
+    // 画像アップロード処理
+    const handleImageUpload = async (e, isEditing = false, itemId = null) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            setLoading(true); // アップロード中はローディング表示
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const data = await response.json();
+            const imageUrl = data.url;
+
+            if (isEditing && itemId) {
+                handleUpdateItem(itemId, 'thumbnail', imageUrl);
+            } else {
+                setNewItem(prev => ({ ...prev, thumbnail: imageUrl }));
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('Failed to upload image');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -141,12 +174,22 @@ export default function EditMakesClient({ initialData, fullContent }) {
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Thumbnail Image</label>
                         <div className={styles.imageUploadWrapper}>
+                            {/* ファイルアップロード */}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className={styles.fileInput}
+                                onChange={(e) => handleImageUpload(e)}
+                            />
+                            {/* URL手動入力も残す場合は残すが、今回はアップロードメインにするため、隠すか補助的にする。
+                                一旦URL入力フィールドは「プレビュー用」兼「手動修正用」として下に配置 */}
                             <input
                                 type="text"
                                 className={styles.input}
                                 value={newItem.thumbnail}
                                 onChange={(e) => setNewItem({ ...newItem, thumbnail: e.target.value })}
-                                placeholder="/assets/image.png or URL"
+                                placeholder="Image URL will appear here..."
+                                readOnly // 基本はアップロード結果を表示
                             />
                         </div>
                         {newItem.thumbnail && (
@@ -194,12 +237,20 @@ export default function EditMakesClient({ initialData, fullContent }) {
                                         ) : (
                                             <div className={styles.noImage}>No Image</div>
                                         )}
+                                        {/* 個別アイテムの画像変更 */}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className={styles.replaceFileBtn}
+                                            onChange={(e) => handleImageUpload(e, true, item.id)}
+                                        />
                                         <input
                                             type="text"
                                             className={styles.miniInput}
                                             value={item.thumbnail}
                                             onChange={(e) => handleUpdateItem(item.id, 'thumbnail', e.target.value)}
                                             placeholder="Image URL"
+                                            readOnly
                                         />
                                     </div>
 
