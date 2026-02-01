@@ -3,15 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { savePageContent } from '../../actions';
+import TechStackInput from '../../../components/admin/TechStackInput';
 
 import styles from './page.module.css';
 
-export default function EditMakesClient({ initialData, fullContent }) {
+export default function EditMakesClient({ initialData }) {
     const router = useRouter();
     const [title, setTitle] = useState(initialData?.title || 'Makes');
     const [items, setItems] = useState(initialData?.items || []);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [editingId, setEditingId] = useState(null); // 編集中のID
 
     // 新規追加用フォーム状態
     const [newItem, setNewItem] = useState({
@@ -19,11 +21,9 @@ export default function EditMakesClient({ initialData, fullContent }) {
         description: '',
         thumbnail: '',
         externalUrl: '',
+        techStack: [],
         isPublished: true
     });
-
-    // 編集中のアイテムID (null = 新規作成モード)
-    const [editingId, setEditingId] = useState(null);
 
     const handleSave = async (e) => {
         e.preventDefault();
@@ -31,12 +31,11 @@ export default function EditMakesClient({ initialData, fullContent }) {
         setMessage(null);
 
         try {
-            // actions.jsのsavePageContent(section, data)に合わせて呼び出す
             const result = await savePageContent('makes', { title, items });
 
             if (result.success) {
                 setMessage({ type: 'success', text: 'Saved successfully!' });
-                router.refresh(); // Refresh server components
+                router.refresh();
                 setTimeout(() => setMessage(null), 3000);
             } else {
                 setMessage({ type: 'error', text: result.error || 'Failed to save' });
@@ -60,13 +59,12 @@ export default function EditMakesClient({ initialData, fullContent }) {
         const itemToAdd = { ...newItem, id };
 
         setItems([itemToAdd, ...items]);
-
-        // リセット
         setNewItem({
             title: '',
             description: '',
             thumbnail: '',
             externalUrl: '',
+            techStack: [],
             isPublished: true
         });
     };
@@ -83,7 +81,6 @@ export default function EditMakesClient({ initialData, fullContent }) {
         ));
     };
 
-    // 画像アップロード処理
     const handleImageUpload = async (e, isEditing = false, itemId = null) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -92,15 +89,13 @@ export default function EditMakesClient({ initialData, fullContent }) {
         formData.append('file', file);
 
         try {
-            setLoading(true); // アップロード中はローディング表示
+            setLoading(true);
             const response = await fetch('/api/upload', {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
+            if (!response.ok) throw new Error('Upload failed');
 
             const data = await response.json();
             const imageUrl = data.url;
@@ -157,21 +152,30 @@ export default function EditMakesClient({ initialData, fullContent }) {
                         />
                     </div>
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>External URL (Optional)</label>
+                        <label className={styles.label}>External URL</label>
                         <input
                             type="url"
                             className={styles.input}
                             value={newItem.externalUrl}
                             onChange={(e) => setNewItem({ ...newItem, externalUrl: e.target.value })}
-                            placeholder="https://GitHub, Demo, etc."
+                            placeholder="https://..."
                         />
                     </div>
+
+                    {/* 技術スタック入力 (コンポーネント) */}
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Tech Stack</label>
+                        <TechStackInput
+                            techStack={newItem.techStack}
+                            onChange={(newStack) => setNewItem({ ...newItem, techStack: newStack })}
+                        />
+                    </div>
+
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Thumbnail Image</label>
                         <div className={styles.imageUploadWrapper}>
-                            {/* ファイルアップロード */}
                             <label className={styles.fileInputLabel}>
-                                📷 Choose Thumbnail Image
+                                📷 Choose Thumbnail
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -179,22 +183,12 @@ export default function EditMakesClient({ initialData, fullContent }) {
                                     onChange={(e) => handleImageUpload(e)}
                                 />
                             </label>
-                            {/* URL手動入力も残す場合は残すが、今回はアップロードメインにするため、隠すか補助的にする。
-                                一旦URL入力フィールドは「プレビュー用」兼「手動修正用」として下に配置 */}
-                            <input
-                                type="text"
-                                className={styles.input}
-                                value={newItem.thumbnail}
-                                onChange={(e) => setNewItem({ ...newItem, thumbnail: e.target.value })}
-                                placeholder="Image URL will appear here..."
-                                readOnly // 基本はアップロード結果を表示
-                            />
+                            {newItem.thumbnail && (
+                                <div className={styles.preview}>
+                                    <img src={newItem.thumbnail} alt="Preview" />
+                                </div>
+                            )}
                         </div>
-                        {newItem.thumbnail && (
-                            <div className={styles.preview}>
-                                <img src={newItem.thumbnail} alt="Preview" />
-                            </div>
-                        )}
                     </div>
                     <button
                         onClick={handleAddItem}
@@ -214,70 +208,106 @@ export default function EditMakesClient({ initialData, fullContent }) {
                         {items.map((item) => (
                             <div key={item.id} className={styles.itemCard}>
                                 <div className={styles.itemHeader}>
-                                    <input
-                                        type="text"
-                                        className={styles.itemTitleInput}
-                                        value={item.title}
-                                        onChange={(e) => handleUpdateItem(item.id, 'title', e.target.value)}
-                                    />
-                                    <button
-                                        onClick={() => handleDeleteItem(item.id)}
-                                        className={styles.deleteBtn}
-                                    >
-                                        ×
-                                    </button>
+                                    <span style={{ fontWeight: 'bold' }}>
+                                        {item.title}
+                                    </span>
+                                    <div>
+                                        <button
+                                            onClick={() => setEditingId(editingId === item.id ? null : item.id)}
+                                            className={styles.editBtn}
+                                            style={{ marginRight: '0.5rem', background: 'none', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer' }}
+                                        >
+                                            {editingId === item.id ? 'Close' : 'Edit'}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteItem(item.id)}
+                                            className={styles.deleteBtn}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div className={styles.itemBody}>
-                                    <div className={styles.thumbnailSection}>
-                                        {item.thumbnail ? (
-                                            <img src={item.thumbnail} alt={item.title} className={styles.itemThumb} />
-                                        ) : (
-                                            <div className={styles.noImage}>No Image</div>
-                                        )}
-                                        {/* 個別アイテムの画像変更 */}
-                                        <label className={styles.fileInputLabel} style={{ fontSize: '0.8rem', padding: '0.5rem' }}>
-                                            Change Image
+                                {/* プレビュー表示 (編集中でない場合) */}
+                                {editingId !== item.id && (
+                                    <div className={styles.itemBody}>
+                                        <div className={styles.thumbnailSection}>
+                                            {item.thumbnail ? (
+                                                <img src={item.thumbnail} alt={item.title} className={styles.itemThumb} />
+                                            ) : <div className={styles.noImage}>No Image</div>}
+                                        </div>
+                                        <div className={styles.detailsSection}>
+                                            <p style={{ fontSize: '0.9rem', color: '#666' }}>{item.description}</p>
+                                            <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                                                {(item.techStack || []).map(t => (
+                                                    <span key={t} style={{ fontSize: '0.7rem', background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>{t}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* 編集モード */}
+                                {editingId === item.id && (
+                                    <div className={styles.itemBody} style={{ flexDirection: 'column' }}>
+                                        <div className={styles.formGroup}>
+                                            <label className={styles.label}>Title</label>
                                             <input
-                                                type="file"
-                                                accept="image/*"
-                                                className={styles.fileInput}
-                                                onChange={(e) => handleImageUpload(e, true, item.id)}
+                                                type="text"
+                                                className={styles.input}
+                                                value={item.title}
+                                                onChange={(e) => handleUpdateItem(item.id, 'title', e.target.value)}
                                             />
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className={styles.miniInput}
-                                            value={item.thumbnail}
-                                            onChange={(e) => handleUpdateItem(item.id, 'thumbnail', e.target.value)}
-                                            placeholder="Image URL"
-                                            readOnly
-                                        />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label className={styles.label}>Thumbnail</label>
+                                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                {item.thumbnail && <img src={item.thumbnail} alt="thumb" style={{ width: '60px', height: '40px', objectFit: 'cover' }} />}
+                                                <label className={styles.fileInputLabel} style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
+                                                    Change
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className={styles.fileInput}
+                                                        onChange={(e) => handleImageUpload(e, true, item.id)}
+                                                    />
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label className={styles.label}>Description</label>
+                                            <textarea
+                                                className={styles.textarea}
+                                                value={item.description}
+                                                style={{ height: '60px' }}
+                                                onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label className={styles.label}>URL</label>
+                                            <input
+                                                type="url"
+                                                className={styles.input}
+                                                value={item.externalUrl}
+                                                onChange={(e) => handleUpdateItem(item.id, 'externalUrl', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label className={styles.label}>Tech Stack</label>
+                                            <TechStackInput
+                                                techStack={item.techStack}
+                                                onChange={(newStack) => handleUpdateItem(item.id, 'techStack', newStack)}
+                                                isMini={true}
+                                            />
+                                        </div>
                                     </div>
-
-                                    <div className={styles.detailsSection}>
-                                        <textarea
-                                            className={styles.miniTextarea}
-                                            value={item.description}
-                                            onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
-                                            placeholder="Description"
-                                        />
-                                        <input
-                                            type="url"
-                                            className={styles.miniInput}
-                                            value={item.externalUrl}
-                                            onChange={(e) => handleUpdateItem(item.id, 'externalUrl', e.target.value)}
-                                            placeholder="External URL"
-                                        />
-                                    </div>
-                                </div>
+                                )}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            {/* 保存ボタン (フローティング) */}
             <div className={styles.floatingSave}>
                 <button
                     onClick={handleSave}

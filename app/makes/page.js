@@ -1,6 +1,7 @@
 import { getContent } from '../../lib/utils';
 import Gear from '../../components/Gear';
 import Link from 'next/link';
+import TechBadgeList from '../../components/TechBadgeList';
 import styles from './page.module.css';
 
 export const metadata = {
@@ -41,6 +42,9 @@ export default async function MakesPage() {
                             <div className={styles.cardContent}>
                                 <h2 className={styles.cardTitle}>{item.title}</h2>
                                 <p className={styles.cardDescription}>{item.description}</p>
+
+                                <TechBadgeList techStack={item.techStack} />
+
                                 {item.externalUrl && (
                                     <a href={item.externalUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
                                         {new URL(item.externalUrl).hostname}

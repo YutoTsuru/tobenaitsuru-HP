@@ -1,0 +1,90 @@
+.techWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.selectedTech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.techTag {
+    background: var(--c-accent-1);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.removeTagBtn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0;
+    line-height: 1;
+}
+
+.removeTagBtn:hover {
+    color: white;
+}
+
+.input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    background: var(--c-bg-primary);
+    color: var(--c-text-primary);
+    font-size: 1rem;
+}
+
+.miniInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--c-border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: var(--c-bg-primary);
+    color: var(--c-text-primary);
+}
+
+.presetList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+}
+
+.presetTag {
+    background: white;
+    border: 1px solid var(--c-border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--c-text-secondary);
+}
+
+.presetTag:hover {
+    border-color: var(--c-accent-1);
+    color: var(--c-accent-1);
+    transform: translateY(-1px);
+}
+
+.presetTag.active {
+    background: var(--c-accent-1);
+    color: white;
+    border-color: var(--c-accent-1);
+}

@@ -7,6 +7,7 @@ import 'swiper/css/effect-cards';
 import 'swiper/css/pagination';
 import Image from 'next/image';
 import Link from 'next/link';
+import TechBadgeList from './TechBadgeList';
 import styles from './MakesCarousel.module.css';
 
 export default function MakesCarousel({ items }) {
@@ -44,16 +45,18 @@ export default function MakesCarousel({ items }) {
                                 )}
                             </div>
                             <div className={styles.content}>
-                                <h3 className={styles.title}>{item.title}</h3>
+                                <div>
+                                    <h3 className={styles.title}>{item.title}</h3>
+                                    <TechBadgeList techStack={item.techStack} limit={3} />
+                                </div>
                                 {item.externalUrl ? (
-                                    <a
+                                    <Link
                                         href={item.externalUrl}
                                         target="_blank"
-                                        rel="noopener noreferrer"
                                         className={styles.link}
                                     >
                                         View Project →
-                                    </a>
+                                    </Link>
                                 ) : (
                                     <span className={styles.noLink}>View Details</span>
                                 )}
