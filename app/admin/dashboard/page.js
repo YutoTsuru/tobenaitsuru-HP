@@ -54,9 +54,9 @@ export default async function Dashboard() {
                             ))}
                         </ul>
                     </div>
-                    <div className={styles.comingSoon}>
-                        🚧 Edit feature coming soon
-                    </div>
+                    <Link href="/admin/edit/skills" className={styles.editButton}>
+                        Manage Skills
+                    </Link>
                 </div>
 
                 <div className={styles.card}>
