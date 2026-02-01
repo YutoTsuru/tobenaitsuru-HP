@@ -1,16 +1,27 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { login } from '../../actions';
 import styles from './page.module.css';
 
 // Initial state for useActionState
 const initialState = {
-    error: null
+    error: null,
+    success: false
 };
 
 export default function Login() {
+    const router = useRouter();
     const [state, formAction] = useActionState(login, initialState);
+
+    // ログイン成功時にリダイレクト
+    useEffect(() => {
+        if (state?.success) {
+            router.push('/admin/dashboard');
+            router.refresh(); // サーバーコンポーネント（サイドバー）の再レンダリングを強制
+        }
+    }, [state?.success, router]);
 
     return (
         <div className={styles.container}>
