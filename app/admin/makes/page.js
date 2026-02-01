@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getContent } from '../../lib/utils';
+import { getContent } from '../../../lib/utils';
 
 import EditMakesClient from './EditMakesClient';
 
