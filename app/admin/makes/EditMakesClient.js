@@ -31,23 +31,18 @@ export default function EditMakesClient({ initialData, fullContent }) {
         setMessage(null);
 
         try {
-            const newContent = {
-                ...fullContent,
-                makes: {
-                    title,
-                    items
-                }
-            };
-
-            const result = await savePageContent(newContent);
+            // actions.jsのsavePageContent(section, data)に合わせて呼び出す
+            const result = await savePageContent('makes', { title, items });
 
             if (result.success) {
                 setMessage({ type: 'success', text: 'Saved successfully!' });
-                router.refresh();
+                router.refresh(); // Refresh server components
+                setTimeout(() => setMessage(null), 3000);
             } else {
                 setMessage({ type: 'error', text: result.error || 'Failed to save' });
             }
         } catch (error) {
+            console.error('Save error:', error);
             setMessage({ type: 'error', text: 'An unexpected error occurred' });
         } finally {
             setLoading(false);
