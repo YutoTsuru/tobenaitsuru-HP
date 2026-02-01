@@ -7,6 +7,8 @@
     position: relative;
     overflow: hidden;
     text-align: center;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
 }
 
 .bgGear1 {
@@ -42,36 +44,105 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3rem;
+    gap: 4rem;
+    /* 間隔を広げる */
 }
 
 .headerSection {
-    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     animation: fadeIn 1s ease-out;
 }
 
 .title {
-    font-size: 4rem;
+    font-size: 4.5rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
     letter-spacing: 0.1em;
-    background: linear-gradient(135deg, var(--c-text-primary) 0%, var(--c-text-secondary) 100%);
+    background: linear-gradient(135deg, var(--c-text-primary) 0%, #888 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    line-height: 1.1;
 }
 
 .subtitle {
     font-size: 1.2rem;
     color: var(--c-accent-1);
     letter-spacing: 0.3em;
-    font-weight: 300;
+    font-weight: 400;
     text-transform: uppercase;
+    margin-bottom: 3rem;
 }
 
+/* Navigation Links Style */
+.navLinks {
+    display: flex;
+    gap: 3rem;
+    margin-top: 1rem;
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+}
+
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+    border-color: rgba(255, 107, 26, 0.3);
+}
+
+.navLabel {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.3rem;
+}
+
+.navDesc {
+    font-size: 0.8rem;
+    color: var(--c-text-secondary);
+    font-weight: 300;
+}
+
+/* Carousel Section */
 .carouselSection {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     animation: slideUp 1s ease-out 0.3s backwards;
+}
+
+.carouselTitle {
+    font-size: 1.2rem;
+    color: var(--c-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.carouselTitle::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 2px;
+    background: var(--c-accent-1);
 }
 
 @keyframes fadeIn {
@@ -100,15 +171,25 @@
 
 @media (max-width: 768px) {
     .title {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
 
     .subtitle {
         font-size: 0.9rem;
     }
 
+    .navLinks {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .navItem {
+        padding: 0.8rem 1rem;
+        min-width: 120px;
+    }
+
     .container {
-        padding: 0 1rem;
-        gap: 2rem;
+        gap: 3rem;
     }
 }

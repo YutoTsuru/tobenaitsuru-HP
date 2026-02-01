@@ -29,9 +29,25 @@ export default async function Home() {
                 <div className={styles.headerSection}>
                     <h1 className={styles.title}>{title}</h1>
                     <p className={styles.subtitle}>{subtitle}</p>
+
+                    <div className={styles.navLinks}>
+                        <Link href="/about" className={styles.navItem}>
+                            <span className={styles.navLabel}>About</span>
+                            <span className={styles.navDesc}>Who I am</span>
+                        </Link>
+                        <Link href="/skills" className={styles.navItem}>
+                            <span className={styles.navLabel}>Skills</span>
+                            <span className={styles.navDesc}>What I can do</span>
+                        </Link>
+                        <Link href="/contact" className={styles.navItem}>
+                            <span className={styles.navLabel}>Contact</span>
+                            <span className={styles.navDesc}>Get in touch</span>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className={styles.carouselSection}>
+                    <h2 className={styles.carouselTitle}>Latest Makes</h2>
                     <MakesCarousel items={makesItems} />
                 </div>
             </div>
