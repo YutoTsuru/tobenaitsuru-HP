@@ -39,6 +39,10 @@ export default async function Home() {
                             <span className={styles.navLabel}>Skills</span>
                             <span className={styles.navDesc}>What I can do</span>
                         </Link>
+                        <Link href="/makes" className={styles.navItem}>
+                            <span className={styles.navLabel}>Makes</span>
+                            <span className={styles.navDesc}>My Creations</span>
+                        </Link>
                         <Link href="/contact" className={styles.navItem}>
                             <span className={styles.navLabel}>Contact</span>
                             <span className={styles.navDesc}>Get in touch</span>
