@@ -69,9 +69,9 @@ export default async function Dashboard() {
                         <p><strong>Status:</strong> <span className={styles.status}>{content?.works?.status}</span></p>
                         <p><strong>Items:</strong> {content?.works?.items?.length || 0} projects</p>
                     </div>
-                    <div className={styles.comingSoon}>
-                        🚧 Edit feature coming soon
-                    </div>
+                    <Link href="/admin/edit/works" className={styles.editButton}>
+                        Manage Works
+                    </Link>
                 </div>
 
                 <div className={styles.card}>
