@@ -62,15 +62,15 @@ export default async function Dashboard() {
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <Gear size={40} duration={12} color="var(--c-accent-3)" />
-                        <h2 className={styles.cardTitle}>Works</h2>
+                        <h2 className={styles.cardTitle}>Makes</h2>
                     </div>
                     <div className={styles.cardContent}>
-                        <p><strong>Title:</strong> {content?.works?.title}</p>
-                        <p><strong>Status:</strong> <span className={styles.status}>{content?.works?.status}</span></p>
-                        <p><strong>Items:</strong> {content?.works?.items?.length || 0} projects</p>
+                        <p><strong>Title:</strong> {content?.makes?.title || 'Makes'}</p>
+                        <p><strong>Items:</strong> {content?.makes?.items?.length || 0} items</p>
+                        <p>Manager for your creations.</p>
                     </div>
-                    <Link href="/admin/edit/works" className={styles.editButton}>
-                        Manage Works
+                    <Link href="/admin/makes" className={styles.editButton}>
+                        Manage Makes
                     </Link>
                 </div>
 

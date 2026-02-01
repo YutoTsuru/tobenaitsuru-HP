@@ -1,0 +1,23 @@
+.techList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.techBadge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(255, 107, 26, 0.1);
+    color: #e65100;
+    border-radius: 12px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 107, 26, 0.2);
+    white-space: nowrap;
+}
+
+.moreTech {
+    font-size: 0.7rem;
+    color: var(--c-text-secondary);
+    align-self: center;
+}

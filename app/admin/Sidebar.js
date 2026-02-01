@@ -38,8 +38,8 @@ export default function Sidebar({ logout }) {
                     <Link href="/admin/edit/contact" className={styles.navLink} onClick={closeSidebar}>
                         Contact
                     </Link>
-                    <Link href="/admin/edit/works" className={styles.navLink} onClick={closeSidebar}>
-                        Works
+                    <Link href="/admin/makes" className={styles.navLink} onClick={closeSidebar}>
+                        Makes
                     </Link>
                     <Link href="/admin/backups" className={styles.navLink} onClick={closeSidebar}>
                         Backups & Restore
