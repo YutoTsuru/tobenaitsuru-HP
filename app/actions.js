@@ -33,7 +33,8 @@ export async function login(prevState, formData) {
     session.lastActivity = Date.now();
     await session.save();
 
-    redirect('/admin/dashboard');
+    // useActionStateと互換性のため、successフラグを返す
+    return { success: true };
 }
 
 export async function logout() {
