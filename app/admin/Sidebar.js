@@ -38,9 +38,9 @@ export default function Sidebar({ logout }) {
                     <Link href="/admin/edit/contact" className={styles.navLink} onClick={closeSidebar}>
                         Contact
                     </Link>
-                    <div className={styles.comingSoonLink}>
-                        Works <span className={styles.badge}>Soon</span>
-                    </div>
+                    <Link href="/admin/edit/works" className={styles.navLink} onClick={closeSidebar}>
+                        Works
+                    </Link>
                 </nav>
                 <form action={logout} className={styles.logoutForm}>
                     <button type="submit" className={styles.logoutBtn}>Logout</button>
