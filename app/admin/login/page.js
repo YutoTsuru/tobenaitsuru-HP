@@ -19,6 +19,7 @@ export default function Login() {
     useEffect(() => {
         if (state?.success) {
             router.push('/admin/dashboard');
+            router.refresh(); // サーバーコンポーネント（サイドバー）の再レンダリングを強制
         }
     }, [state?.success, router]);
 
