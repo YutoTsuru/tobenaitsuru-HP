@@ -41,6 +41,9 @@ export default function Sidebar({ logout }) {
                     <Link href="/admin/edit/works" className={styles.navLink} onClick={closeSidebar}>
                         Works
                     </Link>
+                    <Link href="/admin/backups" className={styles.navLink} onClick={closeSidebar}>
+                        Backups & Restore
+                    </Link>
                 </nav>
                 <form action={logout} className={styles.logoutForm}>
                     <button type="submit" className={styles.logoutBtn}>Logout</button>
