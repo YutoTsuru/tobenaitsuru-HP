@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { savePageContent } from '../../../actions';
+import { savePageContent } from '../../actions';
 
 import styles from './page.module.css';
 
