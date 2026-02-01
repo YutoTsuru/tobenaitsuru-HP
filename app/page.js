@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getContent } from '../lib/utils';
 import Gear from '../components/Gear';
+import MakesCarousel from '../components/MakesCarousel';
 import styles from './page.module.css';
 
 // ページキャッシュを無効化（常に最新データを取得）
@@ -9,6 +10,7 @@ export const revalidate = 0;
 export default async function Home() {
     const content = await getContent();
     const { title, subtitle } = content?.home || { title: 'Tobenaitsuru', subtitle: 'Portfolio' };
+    const makesItems = content?.makes?.items || [];
 
     return (
         <div className={styles.hero}>
@@ -23,27 +25,14 @@ export default async function Home() {
                 <Gear size={200} duration={30} />
             </div>
 
-            <div className={styles.heroContent}>
-                <h1 className={styles.title}>{title}</h1>
-                <p className={styles.subtitle}>{subtitle}</p>
+            <div className={styles.container}>
+                <div className={styles.headerSection}>
+                    <h1 className={styles.title}>{title}</h1>
+                    <p className={styles.subtitle}>{subtitle}</p>
+                </div>
 
-                <div className={styles.links}>
-                    <Link href="/about" className={styles.linkCard}>
-                        <div className={styles.linkTitle}>About</div>
-                        <div className={styles.linkDesc}>Who I am</div>
-                    </Link>
-                    <Link href="/skills" className={styles.linkCard}>
-                        <div className={styles.linkTitle}>Skills</div>
-                        <div className={styles.linkDesc}>What I can do</div>
-                    </Link>
-                    <Link href="/works" className={styles.linkCard}>
-                        <div className={styles.linkTitle}>Works</div>
-                        <div className={styles.linkDesc}>What I built</div>
-                    </Link>
-                    <Link href="/contact" className={styles.linkCard}>
-                        <div className={styles.linkTitle}>Contact</div>
-                        <div className={styles.linkDesc}>Get in touch</div>
-                    </Link>
+                <div className={styles.carouselSection}>
+                    <MakesCarousel items={makesItems} />
                 </div>
             </div>
         </div>

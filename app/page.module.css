@@ -1,6 +1,5 @@
 .hero {
     min-height: calc(100vh - 80px);
-    /* Subtract header height */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -10,69 +9,12 @@
     text-align: center;
 }
 
-.heroContent {
-    position: relative;
-    z-index: 10;
-    animation: fadeIn 1s ease-out;
-}
-
-.title {
-    font-size: 4rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
-    letter-spacing: 0.1em;
-    background: linear-gradient(135deg, var(--c-text-primary) 0%, var(--c-text-secondary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-    font-size: 1.5rem;
-    color: var(--c-accent-1);
-    letter-spacing: 0.2em;
-    font-weight: 300;
-}
-
-.links {
-    display: flex;
-    gap: 2rem;
-    margin-top: 4rem;
-    z-index: 10;
-}
-
-.linkCard {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.5rem 2rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    min-width: 140px;
-}
-
-.linkCard:hover {
-    background: rgba(255, 255, 255, 0.08);
-    transform: translateY(-5px);
-    border-color: var(--c-accent-2);
-}
-
-.linkTitle {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--c-text-primary);
-}
-
-.linkDesc {
-    font-size: 0.8rem;
-    color: var(--c-text-secondary);
-    margin-top: 0.5rem;
-}
-
-/* Background Gears */
 .bgGear1 {
     position: absolute;
     top: -10%;
     right: -5%;
     opacity: 0.1;
+    z-index: 0;
 }
 
 .bgGear2 {
@@ -80,6 +22,7 @@
     bottom: 10%;
     left: -5%;
     opacity: 0.05;
+    z-index: 0;
 }
 
 .bgGear3 {
@@ -87,6 +30,72 @@
     top: 20%;
     left: 10%;
     opacity: 0.03;
+    z-index: 0;
+}
+
+.container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.headerSection {
+    margin-bottom: 1rem;
+    animation: fadeIn 1s ease-out;
+}
+
+.title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, var(--c-text-primary) 0%, var(--c-text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--c-accent-1);
+    letter-spacing: 0.3em;
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.carouselSection {
+    width: 100%;
+    animation: slideUp 1s ease-out 0.3s backwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {
@@ -95,11 +104,11 @@
     }
 
     .subtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
-    .links {
-        flex-direction: column;
-        gap: 1rem;
+    .container {
+        padding: 0 1rem;
+        gap: 2rem;
     }
 }
