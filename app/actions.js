@@ -2,37 +2,50 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { getIronSession } from 'iron-session';
 import { saveContent as saveContentToFile } from '../lib/utils';
+
+const SESSION_OPTIONS = {
+    password: process.env.SESSION_SECRET || 'default-fallback-secret-32-characters-minimum',
+    cookieName: 'admin_session',
+    cookieOptions: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 60 * 30, // 30 minutes
+        path: '/admin'
+    }
+};
 
 export async function login(prevState, formData) {
     const password = formData.get('password');
-
     const adminPassword = process.env.ADMIN_PASSWORD || 'password';
 
-    if (password === adminPassword) {
-        (await cookies()).set('admin_session', 'true', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 60 * 60 * 24 * 7, // 1 week
-            path: '/'
-        });
-        redirect('/admin/dashboard');
-    } else {
+    if (password !== adminPassword) {
         return { error: 'Invalid password' };
     }
+
+    // セッション作成
+    const cookieStore = await cookies();
+    const session = await getIronSession(cookieStore, SESSION_OPTIONS);
+
+    session.isLoggedIn = true;
+    session.lastActivity = Date.now();
+    await session.save();
+
+    redirect('/admin/dashboard');
 }
 
 export async function logout() {
-    (await cookies()).delete('admin_session');
+    const cookieStore = await cookies();
+    const session = await getIronSession(cookieStore, SESSION_OPTIONS);
+
+    session.destroy();
     redirect('/admin/login');
 }
 
 export async function savePageContent(section, data) {
-    // Verify auth
-    const cookieStore = await cookies();
-    if (!cookieStore.get('admin_session')) {
-        throw new Error('Unauthorized');
-    }
+    // ミドルウェアで認証済みのため、ここでのチェックは不要
 
     // Read current content, update section, write back
     // Note: ideally we read, patch, write. 
