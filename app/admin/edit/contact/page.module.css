@@ -1,0 +1,197 @@
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeIn 0.6s ease;
+}
+
+.formCard,
+.previewCard {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 107, 26, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.formCard:hover,
+.previewCard:hover {
+    border-color: var(--c-accent-1);
+    box-shadow: 0 8px 24px rgba(255, 107, 26, 0.15);
+}
+
+.cardTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(255, 107, 26, 0.2);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--c-text-primary);
+    letter-spacing: 0.05em;
+}
+
+.input,
+.textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-main);
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--c-accent-1);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(255, 107, 26, 0.1);
+}
+
+.textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.saveButton,
+.cancelButton {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.saveButton {
+    background: var(--c-accent-1);
+    color: white;
+}
+
+.saveButton:hover {
+    background: #ff8542;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 26, 0.3);
+}
+
+.cancelButton {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--c-text-primary);
+}
+
+.cancelButton:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.status {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(0, 242, 96, 0.1);
+    color: #00aa55;
+    border: 2px solid rgba(0, 242, 96, 0.3);
+}
+
+/* Preview Styles */
+.preview {
+    padding: 1rem;
+}
+
+.previewTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--c-text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.previewList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.previewItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    border-left: 4px solid var(--c-accent-1);
+}
+
+.previewLabel {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--c-accent-1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.previewLink {
+    font-size: 1rem;
+    color: var(--c-accent-2);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    word-break: break-all;
+}
+
+.previewLink:hover {
+    color: var(--c-accent-1);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .previewCard {
+        order: -1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

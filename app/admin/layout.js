@@ -39,8 +39,6 @@ export default async function AdminLayout({ children }) {
                     <div className={styles.sidebarHeader}>CMS</div>
                     <nav className={styles.nav}>
                         <Link href="/admin" className={styles.navLink}>Dashboard</Link>
-                        <Link href="/admin/pages" className={styles.navLink}>Pages</Link>
-                        <Link href="/admin/works" className={styles.navLink}>Works</Link>
                     </nav>
                     <form action={logout} className={styles.logoutForm}>
                         <button type="submit" className={styles.logoutBtn}>Logout</button>
