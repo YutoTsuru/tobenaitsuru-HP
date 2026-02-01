@@ -54,25 +54,28 @@
 }
 
 .card {
-    background: rgba(30, 30, 35, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
     transform: translateY(-5px);
     border-color: var(--c-accent-1);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .thumbnailWrapper {
     height: 200px;
-    background: #111;
+    background: #f0f0f0;
     position: relative;
     overflow: hidden;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .thumbnail {
@@ -92,24 +95,26 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #444;
-    background: #0a0a0a;
+    color: #999;
+    background: #e0e0e0;
 }
 
 .visitButton {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 0.3rem 0.8rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--c-text-primary);
+    padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
     text-decoration: none;
     opacity: 0;
     transform: translateY(-10px);
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .card:hover .visitButton {
@@ -119,6 +124,7 @@
 
 .visitButton:hover {
     background: var(--c-accent-1);
+    color: white;
     border-color: var(--c-accent-1);
 }
 
@@ -130,6 +136,7 @@
     font-size: 1.3rem;
     margin-bottom: 0.8rem;
     color: var(--c-text-primary);
+    font-weight: 700;
 }
 
 .cardDescription {
@@ -148,6 +155,7 @@
     color: var(--c-accent-1);
     text-decoration: none;
     display: inline-block;
+    font-weight: bold;
 }
 
 .link:hover {
@@ -160,7 +168,7 @@
     padding: 4rem;
     color: var(--c-text-secondary);
     font-size: 1.2rem;
-    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(0, 0, 0, 0.1);
     border-radius: 12px;
 }
 
