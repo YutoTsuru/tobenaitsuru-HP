@@ -175,12 +175,15 @@ export default function EditMakesClient({ initialData, fullContent }) {
                         <label className={styles.label}>Thumbnail Image</label>
                         <div className={styles.imageUploadWrapper}>
                             {/* ファイルアップロード */}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className={styles.fileInput}
-                                onChange={(e) => handleImageUpload(e)}
-                            />
+                            <label className={styles.fileInputLabel}>
+                                📷 Choose Thumbnail Image
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className={styles.fileInput}
+                                    onChange={(e) => handleImageUpload(e)}
+                                />
+                            </label>
                             {/* URL手動入力も残す場合は残すが、今回はアップロードメインにするため、隠すか補助的にする。
                                 一旦URL入力フィールドは「プレビュー用」兼「手動修正用」として下に配置 */}
                             <input
@@ -238,12 +241,15 @@ export default function EditMakesClient({ initialData, fullContent }) {
                                             <div className={styles.noImage}>No Image</div>
                                         )}
                                         {/* 個別アイテムの画像変更 */}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className={styles.replaceFileBtn}
-                                            onChange={(e) => handleImageUpload(e, true, item.id)}
-                                        />
+                                        <label className={styles.fileInputLabel} style={{ fontSize: '0.8rem', padding: '0.5rem' }}>
+                                            Change Image
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className={styles.fileInput}
+                                                onChange={(e) => handleImageUpload(e, true, item.id)}
+                                            />
+                                        </label>
                                         <input
                                             type="text"
                                             className={styles.miniInput}

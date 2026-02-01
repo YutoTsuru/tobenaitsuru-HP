@@ -69,15 +69,34 @@
 }
 
 /* File Input Style */
-.fileInput {
-    margin-bottom: 0.5rem;
-    width: 100%;
-}
-
 .imageUploadWrapper {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+}
+
+.fileInputLabel {
+    display: inline-block;
+    padding: 0.8rem 1.2rem;
+    background: var(--c-bg-primary);
+    border: 2px dashed var(--c-border);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--c-text-secondary);
+    font-size: 0.9rem;
+}
+
+.fileInputLabel:hover {
+    border-color: var(--c-accent-1);
+    color: var(--c-accent-1);
+    background: rgba(255, 107, 26, 0.05);
+}
+
+.fileInput {
+    display: none;
+    /* デフォルトの入力は隠す */
 }
 
 .preview {
@@ -229,23 +248,31 @@
 }
 
 .saveButton {
-    padding: 1rem 2rem;
-    background: var(--c-primary);
+    padding: 1rem 2.5rem;
+    background: var(--c-accent-1);
+    /* メインアクセントカラーに変更 */
     color: white;
     border: none;
     border-radius: 50px;
-    /* Pill shape */
-    font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(255, 107, 26, 0.4);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .saveButton:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 26, 0.5);
+    background: var(--c-accent-1-hover);
 }
 
 .saveButton:disabled {
     background: #ccc;
+    box-shadow: none;
     cursor: not-allowed;
+    transform: none;
 }
