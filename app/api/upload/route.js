@@ -15,6 +15,7 @@ export async function POST(request) {
         // Upload to Vercel Blob
         const blob = await put(filename, file, {
             access: 'public',
+            addRandomSuffix: true // Prevent overwrite errors
         });
 
         return NextResponse.json({ url: blob.url });

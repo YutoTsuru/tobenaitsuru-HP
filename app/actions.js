@@ -2,20 +2,10 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { getIronSession } from 'iron-session';
 import { saveContent as saveContentToFile } from '../lib/utils';
-
-const SESSION_OPTIONS = {
-    password: process.env.SESSION_SECRET || 'default-fallback-secret-32-characters-minimum',
-    cookieName: 'admin_session',
-    cookieOptions: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 60 * 30, // 30 minutes
-        path: '/admin'
-    }
-};
+import { SESSION_OPTIONS } from '../lib/session';
 
 export async function login(prevState, formData) {
     const password = formData.get('password');
@@ -67,6 +57,11 @@ export async function savePageContent(section, data) {
 
     const success = await saveContentToFile(newContent);
     if (!success) return { error: 'Failed to save' };
+
+    // キャッシュを無効化して最新データを表示させる
+    revalidatePath(`/${section}`); // ex: /makes, /skills
+    revalidatePath('/'); // Home page might display summary
+    revalidatePath('/admin'); // Admin pages
 
     return { success: true };
 }
