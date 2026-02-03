@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import styles from './TechStackInput.module.css';
 
-const TECH_PRESETS = [
-    'JavaScript', 'TypeScript', 'React', 'Next.js', 'Vue.js',
-    'Python', 'Django', 'Flask', 'FastAPI',
-    'Node.js', 'HTML', 'CSS', 'TailwindCSS',
-    'Vercel', 'AWS', 'GCP', 'Firebase', 'Supabase'
-];
+const TECH_CATEGORIES = {
+    'Frontend': ['JavaScript', 'TypeScript', 'React', 'Next.js', 'Vue.js', 'HTML', 'CSS', 'TailwindCSS'],
+    'Backend': ['Node.js', 'Python', 'Django', 'Flask', 'FastAPI', 'Go', 'Rust'],
+    'Database': ['PostgreSQL', 'MySQL', 'MongoDB', 'Firebase', 'Supabase'],
+    'Infrastructure': ['Vercel', 'AWS', 'GCP', 'Docker', 'Kubernetes'],
+    'Tools': ['Git', 'GitHub', 'Figma', 'Notion']
+};
 
 export default function TechStackInput({ techStack = [], onChange, isMini = false }) {
 
@@ -55,14 +56,21 @@ export default function TechStackInput({ techStack = [], onChange, isMini = fals
             />
 
             <div className={styles.presetList}>
-                {TECH_PRESETS.map(tech => (
-                    <button
-                        key={tech}
-                        onClick={() => toggleTech(tech)}
-                        className={`${styles.presetTag} ${(techStack || []).includes(tech) ? styles.active : ''}`}
-                    >
-                        {tech}
-                    </button>
+                {Object.entries(TECH_CATEGORIES).map(([category, techs]) => (
+                    <div key={category} className={styles.categoryGroup}>
+                        <h4 className={styles.categoryTitle}>{category}</h4>
+                        <div className={styles.categoryItems}>
+                            {techs.map(tech => (
+                                <button
+                                    key={tech}
+                                    onClick={() => toggleTech(tech)}
+                                    className={`${styles.presetTag} ${(techStack || []).includes(tech) ? styles.active : ''}`}
+                                >
+                                    {tech}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 ))}
             </div>
         </div>
