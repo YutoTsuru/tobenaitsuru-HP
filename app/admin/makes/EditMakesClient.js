@@ -125,7 +125,10 @@ export default function EditMakesClient({ initialData }) {
                 body: formData,
             });
 
-            if (!response.ok) throw new Error('Upload failed');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Upload failed');
+            }
 
             const data = await response.json();
             const imageUrl = data.url;
@@ -133,7 +136,7 @@ export default function EditMakesClient({ initialData }) {
             setFormState(prev => ({ ...prev, thumbnail: imageUrl }));
         } catch (error) {
             console.error('Error uploading image:', error);
-            alert('Failed to upload image');
+            alert(error.message); // Show actual error
         } finally {
             setLoading(false);
         }

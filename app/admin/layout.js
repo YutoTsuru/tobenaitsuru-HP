@@ -2,10 +2,13 @@ import { cookies } from 'next/headers';
 import { logout } from '../actions';
 import Sidebar from './Sidebar';
 import styles from './layout.module.css';
+import { getIronSession } from 'iron-session';
+import { SESSION_OPTIONS } from '../../lib/session';
 
 export default async function AdminLayout({ children }) {
     const cookieStore = await cookies();
-    const isLoggedIn = cookieStore.get('admin_session')?.value === 'true';
+    const session = await getIronSession(cookieStore, SESSION_OPTIONS);
+    const isLoggedIn = session.isLoggedIn === true;
 
     return (
         <div className={styles.adminContainer}>

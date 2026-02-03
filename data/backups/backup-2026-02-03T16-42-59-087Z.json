@@ -1,0 +1,60 @@
+{
+  "home": {
+    "title": "Tobenaitsuru",
+    "subtitle": "Thinking, Designing, Making"
+  },
+  "about": {
+    "title": "About Me",
+    "profile": "Student Software Engineer / IoT Enthusiast",
+    "content": "幼い頃から形あるものを作ることに魅了され、現在はソフトウェアとハードウェアを横断したものづくりに取り組んでいます。\n無機質な機械に、有機的な思考・対話・意思を宿すことをテーマに、\nWeb、AI、IoT、ロボット開発を通して「人と共にある技術」を探究しています。"
+  },
+  "skills": {
+    "title": "My Skills",
+    "items": [
+      {
+        "name": "JavaScript/React/Next.js",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Python",
+        "level": "Intermediate"
+      },
+      {
+        "name": "Design",
+        "level": "Intermediate"
+      }
+    ]
+  },
+  "works": {
+    "title": "Works",
+    "status": "Coming Soon",
+    "items": []
+  },
+  "contact": {
+    "title": "Contact",
+    "email": "turu.notarobot@gmail.com",
+    "github": "https://github.com/YutoTsuru",
+    "twitter": "https://x.com/SETU________"
+  },
+  "makes": {
+    "title": "Makes",
+    "items": [
+      {
+        "title": "HP",
+        "description": "今見ていただいてるHPです",
+        "thumbnail": "https://1q5dw5wtleccdgmn.public.blob.vercel-storage.com/HP.png",
+        "externalUrl": "https://tbnforge.com/",
+        "techStack": [
+          "JavaScript",
+          "TypeScript",
+          "Next.js",
+          "CSS",
+          "Vercel",
+          "GitHub"
+        ],
+        "isPublished": true,
+        "id": "93511fff-5908-4be3-af5a-288ce2232237"
+      }
+    ]
+  }
+}
