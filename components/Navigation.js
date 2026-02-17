@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Gear from './Gear';
 import styles from './Navigation.module.css';
 
 const NAV_ITEMS = [
@@ -71,7 +72,14 @@ export default function Navigation() {
                             className={`${styles.quickLink} ${activeClass}`.trim()}
                             onClick={() => setIsQuickOpen(false)}
                         >
-                            <span className={styles.quickIndex}>{`0${index + 1}`.slice(-2)}</span>
+                            <span className={styles.quickGear} aria-hidden="true">
+                                <Gear
+                                    size={18}
+                                    color="var(--c-gear-silver)"
+                                    duration={8 + index * 1.5}
+                                    reverse={index % 2 === 1}
+                                />
+                            </span>
                             {item.label}
                         </Link>
                     );
