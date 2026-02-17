@@ -162,3 +162,26 @@ h3 {
     /* Approx footer height */
     padding-top: 2rem;
 }
+
+@media (max-width: 1080px) {
+    .site-header {
+        height: auto;
+        min-height: var(--header-height);
+        padding: 0.5rem 0;
+    }
+
+    .logo {
+        font-size: clamp(1rem, 3.2vw, 1.35rem);
+        letter-spacing: 0.08em;
+    }
+}
+
+@media (max-width: 560px) {
+    .container {
+        padding: 0 14px;
+    }
+
+    .site-main {
+        padding-top: 1.4rem;
+    }
+}
