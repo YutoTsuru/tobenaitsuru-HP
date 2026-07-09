@@ -4,10 +4,22 @@ import Link from 'next/link';
 import TechBadgeList from '../../components/TechBadgeList';
 import styles from './page.module.css';
 
+// ページキャッシュを無効化（常に最新データを取得）
+export const revalidate = 0;
+
 export const metadata = {
     title: 'Makes | Tobenaitsuru',
     description: 'My creations, products, and experiments.',
 };
+
+// 不正なURLでも throw させずホスト名を取り出す
+function getHostname(url) {
+    try {
+        return new URL(url).hostname;
+    } catch {
+        return url;
+    }
+}
 
 export default async function MakesPage() {
     const content = await getContent();
@@ -47,7 +59,7 @@ export default async function MakesPage() {
 
                                 {item.externalUrl && (
                                     <a href={item.externalUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                                        {new URL(item.externalUrl).hostname}
+                                        {getHostname(item.externalUrl)}
                                     </a>
                                 )}
                             </div>
