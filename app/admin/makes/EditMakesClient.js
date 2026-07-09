@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { savePageContent } from '../../actions';
 import TechStackInput from '../../../components/admin/TechStackInput';
@@ -14,6 +14,18 @@ export default function EditMakesClient({ initialData }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [editingId, setEditingId] = useState(null); // ID of item being edited
+    const [isDirty, setIsDirty] = useState(false); // 未保存の変更があるか
+
+    // 未保存のままページを閉じる/リロードしようとしたら警告
+    useEffect(() => {
+        if (!isDirty) return;
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
 
     // Form state (used for both Add and Edit)
     const [formState, setFormState] = useState({
@@ -34,7 +46,8 @@ export default function EditMakesClient({ initialData }) {
             const result = await savePageContent('makes', { title, items });
 
             if (result.success) {
-                setMessage({ type: 'success', text: 'Saved successfully!' });
+                setIsDirty(false);
+                setMessage({ type: 'success', text: '保存しました。公開ページに反映されています。' });
                 router.refresh();
                 setTimeout(() => setMessage(null), 3000);
             } else {
@@ -61,14 +74,15 @@ export default function EditMakesClient({ initialData }) {
             setItems(items.map(item =>
                 item.id === editingId ? { ...formState, id: editingId } : item
             ));
-            setMessage({ type: 'success', text: 'Item updated. Remember to Save All Changes.' });
+            setMessage({ type: 'warning', text: 'リスト上で更新しました（まだ保存されていません）。右下の「Save All Changes」を押すと反映されます。' });
         } else {
             // Add new item
             const id = crypto.randomUUID();
             const itemToAdd = { ...formState, id };
             setItems([itemToAdd, ...items]);
-            setMessage({ type: 'success', text: 'New item added. Remember to Save All Changes.' });
+            setMessage({ type: 'warning', text: 'リストに追加しました（まだ保存されていません）。右下の「Save All Changes」を押すと公開されます。' });
         }
+        setIsDirty(true);
 
         // Reset form
         resetForm();
@@ -102,13 +116,22 @@ export default function EditMakesClient({ initialData }) {
     };
 
     const handleDeleteItem = (id) => {
-        if (confirm('Are you sure you want to delete this item?')) {
+        if (confirm('この項目を削除しますか？（「Save All Changes」を押すまで確定されません）')) {
             setItems(items.filter(item => item.id !== id));
+            setIsDirty(true);
+            setMessage({ type: 'warning', text: 'リストから削除しました（まだ保存されていません）。右下の「Save All Changes」を押すと反映されます。' });
             // If deleting the currently edited item, reset form
             if (editingId === id) {
                 resetForm();
             }
         }
+    };
+
+    const handleBackToDashboard = () => {
+        if (isDirty && !confirm('未保存の変更があります。保存せずにダッシュボードに戻りますか？')) {
+            return;
+        }
+        router.push('/admin/dashboard');
     };
 
     const handleImageUpload = async (e) => {
@@ -146,7 +169,7 @@ export default function EditMakesClient({ initialData }) {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h1 className={styles.pageTitle}>Manage Makes</h1>
-                <button onClick={() => router.push('/admin/dashboard')} className={styles.backButton}>
+                <button onClick={handleBackToDashboard} className={styles.backButton}>
                     ← Dashboard
                 </button>
             </div>
@@ -228,6 +251,17 @@ export default function EditMakesClient({ initialData }) {
                         </div>
                     </div>
 
+                    <div className={styles.formGroup}>
+                        <label className={styles.publishToggle}>
+                            <input
+                                type="checkbox"
+                                checked={formState.isPublished}
+                                onChange={(e) => setFormState({ ...formState, isPublished: e.target.checked })}
+                            />
+                            公開する（オフにすると下書きとして保存され、公開ページには表示されません）
+                        </label>
+                    </div>
+
                     <div className={styles.formActions}>
                         {editingId && (
                             <button
@@ -258,6 +292,9 @@ export default function EditMakesClient({ initialData }) {
                                 <div className={styles.itemHeader}>
                                     <span style={{ fontWeight: 'bold' }}>
                                         {item.title}
+                                        {item.isPublished === false && (
+                                            <span className={styles.draftBadge}>下書き</span>
+                                        )}
                                     </span>
                                     <div>
                                         <button
@@ -298,9 +335,12 @@ export default function EditMakesClient({ initialData }) {
             </div>
 
             <div className={styles.floatingSave}>
+                {isDirty && (
+                    <span className={styles.unsavedBadge}>● 未保存の変更があります</span>
+                )}
                 <button
                     onClick={handleSave}
-                    className={styles.saveButton}
+                    className={`${styles.saveButton} ${isDirty ? styles.saveButtonDirty : ''}`.trim()}
                     disabled={loading}
                 >
                     {loading ? 'Saving...' : 'Save All Changes'}
