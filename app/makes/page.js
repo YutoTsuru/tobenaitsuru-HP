@@ -4,14 +4,28 @@ import Link from 'next/link';
 import TechBadgeList from '../../components/TechBadgeList';
 import styles from './page.module.css';
 
+// ページキャッシュを無効化（常に最新データを取得）
+export const revalidate = 0;
+
 export const metadata = {
     title: 'Makes | Tobenaitsuru',
     description: 'My creations, products, and experiments.',
 };
 
+// 不正なURLでも throw させずホスト名を取り出す
+function getHostname(url) {
+    try {
+        return new URL(url).hostname;
+    } catch {
+        return url;
+    }
+}
+
 export default async function MakesPage() {
     const content = await getContent();
     const makes = content.makes || { title: 'Makes', items: [] };
+    // 下書き(isPublished: false)は公開ページに表示しない
+    const publishedItems = (makes.items || []).filter((item) => item.isPublished !== false);
 
     return (
         <div className={styles.container}>
@@ -24,8 +38,8 @@ export default async function MakesPage() {
             </div>
 
             <div className={styles.grid}>
-                {makes.items && makes.items.length > 0 ? (
-                    makes.items.map((item) => (
+                {publishedItems.length > 0 ? (
+                    publishedItems.map((item) => (
                         <div key={item.id} className={styles.card}>
                             <div className={styles.thumbnailWrapper}>
                                 {item.thumbnail ? (
@@ -47,7 +61,7 @@ export default async function MakesPage() {
 
                                 {item.externalUrl && (
                                     <a href={item.externalUrl} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                                        {new URL(item.externalUrl).hostname}
+                                        {getHostname(item.externalUrl)}
                                     </a>
                                 )}
                             </div>

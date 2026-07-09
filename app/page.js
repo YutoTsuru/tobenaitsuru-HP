@@ -10,7 +10,8 @@ export const revalidate = 0;
 export default async function Home() {
     const content = await getContent();
     const { title, subtitle } = content?.home || { title: 'Tobenaitsuru', subtitle: 'Portfolio' };
-    const makesItems = content?.makes?.items || [];
+    // 下書き(isPublished: false)は公開ページに表示しない
+    const makesItems = (content?.makes?.items || []).filter((item) => item.isPublished !== false);
 
     return (
         <div className={styles.hero}>
