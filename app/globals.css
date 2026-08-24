@@ -29,6 +29,7 @@
 
     /* Font */
     --font-main: "Inter", "Helvetica Neue", Arial, sans-serif;
+    --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", serif;
 
     /* Spacing */
     --container-width: 1000px;

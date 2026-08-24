@@ -89,6 +89,8 @@ export default async function Dashboard() {
                         <p><strong>Email:</strong> {content?.contact?.email}</p>
                         <p><strong>GitHub:</strong> {content?.contact?.github}</p>
                         <p><strong>Twitter:</strong> {content?.contact?.twitter}</p>
+                        <p><strong>Zenn:</strong> {content?.contact?.zenn}</p>
+                        <p><strong>note:</strong> {content?.contact?.note}</p>
                     </div>
                     <Link href="/admin/edit/contact" className={styles.editButton}>
                         Edit Contact

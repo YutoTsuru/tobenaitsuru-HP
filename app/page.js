@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getContent } from '../lib/utils';
 import Gear from '../components/Gear';
-import MakesCarousel from '../components/MakesCarousel';
+import MakesBook from '../components/MakesBook';
 import styles from './page.module.css';
 
 // ページキャッシュを無効化（常に最新データを取得）
@@ -53,7 +53,7 @@ export default async function Home() {
 
                 <div className={styles.carouselSection}>
                     <h2 className={styles.carouselTitle}>Latest Makes</h2>
-                    <MakesCarousel items={makesItems} />
+                    <MakesBook items={makesItems} />
                 </div>
             </div>
         </div>

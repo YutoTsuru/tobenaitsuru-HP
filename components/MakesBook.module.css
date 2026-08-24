@@ -1,0 +1,621 @@
+.bookWrapper {
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    perspective: 2000px;
+}
+
+/* ===== 机の上に置かれた本（開いた状態） ===== */
+.book {
+    position: relative;
+    width: min(860px, 100%);
+    margin: 0 auto;
+    aspect-ratio: 1.42;
+    /* 表紙は紙の束からわずかにはみ出す程度 */
+    padding: 11px 24px 22px;
+    border-radius: 6px 10px 10px 6px / 8px 12px 12px 8px;
+    transform-style: preserve-3d;
+    transform: rotateX(5deg);
+    /* 革の表紙 */
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0) 22%),
+        linear-gradient(90deg, #6f4e34 0%, #5c4029 48%, #4f3722 50%, #5c4029 52%, #6f4e34 100%);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 177, 66, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 30px 46px rgba(74, 59, 50, 0.35),
+        0 8px 16px rgba(74, 59, 50, 0.28);
+}
+
+/* 机に落ちる影 */
+.book::after {
+    content: '';
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    bottom: -30px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(74, 59, 50, 0.32), rgba(74, 59, 50, 0) 70%);
+    pointer-events: none;
+    transform: translateZ(-1px);
+}
+
+.spread {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    transform-style: preserve-3d;
+}
+
+/* ===== ページ（紙） ===== */
+.page {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, #fdf8ee 0%, #f7eddc 100%);
+}
+
+/* 綴じ側へ向かってふくらむ紙の陰影 */
+.page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.pageLeft {
+    border-radius: 10px 2px 2px 10px;
+    /* 綴じ目を軸に手前へ開く */
+    transform-origin: right center;
+    transform: rotateY(6deg);
+}
+
+.pageLeft::after {
+    background: linear-gradient(90deg,
+            rgba(74, 59, 50, 0.16) 0%,
+            rgba(74, 59, 50, 0) 8%,
+            rgba(255, 255, 255, 0.5) 26%,
+            rgba(255, 255, 255, 0) 55%,
+            rgba(74, 59, 50, 0.1) 88%,
+            rgba(74, 59, 50, 0.34) 100%);
+    border-radius: 10px 2px 2px 10px;
+}
+
+.pageRight {
+    border-radius: 2px 10px 10px 2px;
+    transform-origin: left center;
+    transform: rotateY(-6deg);
+}
+
+.pageRight::after {
+    background: linear-gradient(270deg,
+            rgba(74, 59, 50, 0.16) 0%,
+            rgba(74, 59, 50, 0) 8%,
+            rgba(255, 255, 255, 0.5) 26%,
+            rgba(255, 255, 255, 0) 55%,
+            rgba(74, 59, 50, 0.1) 88%,
+            rgba(74, 59, 50, 0.34) 100%);
+    border-radius: 2px 10px 10px 2px;
+}
+
+/* 綴じ目（ノド） */
+.gutter {
+    position: absolute;
+    top: -4px;
+    bottom: -6px;
+    left: 50%;
+    width: 30px;
+    transform: translateX(-50%);
+    background:
+        linear-gradient(90deg,
+            rgba(74, 59, 50, 0) 0%,
+            rgba(74, 59, 50, 0.18) 30%,
+            rgba(40, 28, 18, 0.55) 47%,
+            rgba(24, 16, 10, 0.7) 50%,
+            rgba(40, 28, 18, 0.55) 53%,
+            rgba(74, 59, 50, 0.18) 70%,
+            rgba(74, 59, 50, 0) 100%);
+    pointer-events: none;
+    z-index: 8;
+}
+
+/* 花布（ヘッドバンド）：綴じ目の上下 */
+.gutter::before,
+.gutter::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 6px;
+    border-radius: 3px;
+    background: repeating-linear-gradient(90deg, #c9a227 0 2px, #f6e3b0 2px 4px);
+    opacity: 0.85;
+}
+
+.gutter::before {
+    top: 0;
+}
+
+.gutter::after {
+    bottom: 0;
+}
+
+/* しおり */
+.ribbon {
+    position: absolute;
+    top: 0;
+    left: calc(50% + 20px);
+    width: 13px;
+    height: calc(100% + 26px);
+    background: linear-gradient(90deg, #7f1d1d 0%, #a3312f 35%, #c04a3f 55%, #8b2420 100%);
+    box-shadow: 0 2px 6px rgba(74, 59, 50, 0.35);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 10px), 0 100%);
+    /* 右ページの開き角に合わせて寝かせる（回転軸は綴じ目） */
+    transform-origin: -20px center;
+    transform: rotateY(-6deg);
+    pointer-events: none;
+    z-index: 4;
+}
+
+/* ===== めくれる紙 ===== */
+.sheet {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    /* 実際の動きは JS（Web Animations API）で制御 */
+    transform: rotateY(-6deg);
+    visibility: hidden;
+    z-index: 6;
+}
+
+.sheetVisible {
+    visibility: visible;
+}
+
+.sheetFace {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: linear-gradient(180deg, #fdf8ee 0%, #f7eddc 100%);
+    box-shadow: 0 6px 26px rgba(74, 59, 50, 0.35);
+}
+
+.sheetFront {
+    border-radius: 2px 10px 10px 2px;
+}
+
+.sheetBack {
+    transform: rotateY(180deg);
+    /* めくり終わると左ページとして着地するので外側は左 */
+    border-radius: 10px 2px 2px 10px;
+}
+
+.sheetBack::after {
+    background: linear-gradient(90deg,
+            rgba(74, 59, 50, 0.16) 0%,
+            rgba(74, 59, 50, 0) 8%,
+            rgba(255, 255, 255, 0.5) 26%,
+            rgba(255, 255, 255, 0) 55%,
+            rgba(74, 59, 50, 0.1) 88%,
+            rgba(74, 59, 50, 0.34) 100%);
+}
+
+/* めくれる紙にも同じふくらみの陰影を */
+.sheetFace::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: linear-gradient(270deg,
+            rgba(74, 59, 50, 0.16) 0%,
+            rgba(74, 59, 50, 0) 8%,
+            rgba(255, 255, 255, 0.5) 26%,
+            rgba(255, 255, 255, 0) 55%,
+            rgba(74, 59, 50, 0.1) 88%,
+            rgba(74, 59, 50, 0.34) 100%);
+}
+
+/* ===== ページ中身 ===== */
+.pageInner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 2rem 2.4rem 2.4rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.pageLeft .pageInner,
+.sheetBack .pageInner {
+    padding-right: 2.8rem;
+}
+
+.pageRight .pageInner,
+.sheetFront .pageInner {
+    padding-left: 2.8rem;
+}
+
+.folio {
+    position: absolute;
+    bottom: 1rem;
+    right: 1.8rem;
+    font-family: var(--font-serif);
+    font-size: 0.8rem;
+    color: rgba(74, 59, 50, 0.45);
+}
+
+.pageLeft .folio,
+.sheetBack .folio {
+    right: auto;
+    left: 1.8rem;
+}
+
+/* --- 左ページ：写真 --- */
+.photoFrame {
+    position: relative;
+    /* 上下の余白を等分して写真を中央に置く（台紙に貼った見え方） */
+    margin-top: auto;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 74%;
+    padding: 11px;
+    background: #fffdf8;
+    border: 1px solid rgba(74, 59, 50, 0.12);
+    box-shadow: 0 6px 14px rgba(74, 59, 50, 0.18);
+    transform: rotate(-1.2deg);
+}
+
+/* アプリのスクショは横長なので、切らずに収めて余白は台紙の色に */
+.photo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    background: #f2ece0;
+    display: block;
+}
+
+.noPhoto {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eae0d1;
+    color: #a2907d;
+    font-family: var(--font-serif);
+    letter-spacing: 0.1em;
+}
+
+/* マスキングテープ */
+.tape {
+    position: absolute;
+    top: -10px;
+    left: -8px;
+    width: 58px;
+    height: 20px;
+    background: rgba(255, 177, 66, 0.35);
+    border: 1px solid rgba(255, 177, 66, 0.25);
+    transform: rotate(-32deg);
+}
+
+.tapeRight {
+    left: auto;
+    right: -8px;
+    transform: rotate(32deg);
+}
+
+.caption {
+    margin-top: 0.9rem;
+    margin-bottom: auto;
+    text-align: center;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--c-text-secondary);
+}
+
+/* --- 右ページ：本文 --- */
+.chapter {
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    color: rgba(74, 59, 50, 0.5);
+    margin-bottom: 0.6rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.7rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #4a3b32;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.rule {
+    display: block;
+    width: 60px;
+    height: 2px;
+    margin: 0.9rem 0 1.1rem;
+    background: linear-gradient(90deg, var(--c-gear-gold), rgba(255, 177, 66, 0));
+}
+
+.mobilePhoto {
+    display: none;
+}
+
+.description {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    line-height: 1.95;
+    color: #5b4a3e;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 1.2rem;
+}
+
+.techArea {
+    margin-top: auto;
+}
+
+.pageFooter {
+    margin-top: 0.4rem;
+}
+
+.link,
+.noLink {
+    display: inline-block;
+    padding: 0.45rem 1.1rem;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: #6b4c33;
+    text-decoration: none;
+    background: rgba(255, 253, 247, 0.9);
+    border: 1px solid rgba(139, 100, 64, 0.45);
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+.link:hover {
+    background: #6b4c33;
+    color: #fdf6ea;
+    border-color: #6b4c33;
+    transform: translateX(4px);
+}
+
+.noLink {
+    background: rgba(139, 100, 64, 0.06);
+    color: rgba(74, 59, 50, 0.35);
+    border-color: rgba(139, 100, 64, 0.2);
+    cursor: default;
+}
+
+/* ===== ページの角（クリックでめくる） ===== */
+.corner {
+    position: absolute;
+    bottom: 14px;
+    width: 84px;
+    height: 100px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 9;
+}
+
+.cornerNext {
+    right: 16px;
+}
+
+.cornerPrev {
+    left: 16px;
+}
+
+.corner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cornerNext::after {
+    background: linear-gradient(225deg, rgba(74, 59, 50, 0.28) 0%, rgba(74, 59, 50, 0.07) 42%, rgba(74, 59, 50, 0) 55%);
+    border-radius: 0 0 10px 0;
+}
+
+.cornerPrev::after {
+    background: linear-gradient(135deg, rgba(74, 59, 50, 0.28) 0%, rgba(74, 59, 50, 0.07) 42%, rgba(74, 59, 50, 0) 55%);
+    border-radius: 0 0 0 10px;
+}
+
+.corner:hover::after,
+.corner:focus-visible::after {
+    opacity: 1;
+}
+
+/* ===== 操作パネル ===== */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.navButton {
+    width: 34px;
+    height: 34px;
+    line-height: 1;
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+    color: #6b4c33;
+    background: rgba(255, 253, 247, 0.7);
+    border: 1px solid rgba(139, 100, 64, 0.35);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.navButton:hover:not(:disabled) {
+    background: #6b4c33;
+    color: #fdf6ea;
+    border-color: #6b4c33;
+}
+
+.navButton:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.counter {
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    color: var(--c-text-secondary);
+}
+
+.counter em {
+    font-style: normal;
+    opacity: 0.5;
+    margin: 0 0.15rem;
+}
+
+.empty {
+    max-width: 420px;
+    margin: 0 auto;
+    text-align: center;
+    color: var(--c-text-secondary);
+    padding: 3rem 2rem;
+    font-family: var(--font-serif);
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(139, 100, 64, 0.3);
+    border-radius: 5px;
+    background: linear-gradient(180deg, #fdf8ee, #f6ecd9);
+    box-shadow: 0 14px 26px rgba(74, 59, 50, 0.18);
+}
+
+.moreButtonWrapper {
+    text-align: center;
+    margin-top: 1.4rem;
+}
+
+.moreButton {
+    display: inline-block;
+    color: var(--c-text-secondary);
+    text-decoration: none;
+    font-family: var(--font-serif);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    border: 1px solid rgba(139, 100, 64, 0.35);
+    padding: 0.5rem 1.5rem;
+    border-radius: 3px;
+    background: rgba(255, 253, 247, 0.65);
+    transition: all 0.3s;
+}
+
+.moreButton:hover {
+    background: var(--c-accent-1);
+    color: white;
+    border-color: var(--c-accent-1);
+}
+
+/* ===== レスポンシブ：狭い画面は片ページの本 ===== */
+@media (max-width: 760px) {
+    .book {
+        width: min(340px, 100%);
+        aspect-ratio: 0.76;
+        padding: 8px 16px 16px;
+        transform: rotateX(3deg);
+    }
+
+    .pageLeft {
+        display: none;
+    }
+
+    .pageRight {
+        width: 100%;
+        border-radius: 3px 10px 10px 3px;
+        transform: rotateY(-4deg);
+    }
+
+    .gutter {
+        width: 16px;
+        left: 0;
+        transform: none;
+    }
+
+    .gutter::before,
+    .gutter::after {
+        display: none;
+    }
+
+    .ribbon {
+        left: 16px;
+        width: 10px;
+        transform-origin: -16px center;
+        transform: rotateY(-4deg);
+    }
+
+    .sheet {
+        left: 0;
+        width: 100%;
+    }
+
+    .pageInner {
+        padding: 1.4rem 1.4rem 2rem;
+    }
+
+    .pageRight .pageInner,
+    .sheetFront .pageInner {
+        padding-left: 1.9rem;
+    }
+
+    .title {
+        font-size: 1.35rem;
+    }
+
+    .mobilePhoto {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        margin-bottom: 1.1rem;
+        padding: 6px;
+        background: #fffdf8;
+        border: 1px solid rgba(74, 59, 50, 0.12);
+        box-shadow: 0 4px 10px rgba(74, 59, 50, 0.16);
+    }
+
+    .description {
+        -webkit-line-clamp: 4;
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+    .corner {
+        width: 60px;
+        height: 74px;
+    }
+}
+
+
