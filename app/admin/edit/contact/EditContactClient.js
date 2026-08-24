@@ -11,9 +11,12 @@ export default function EditContactClient({ initialData }) {
         title: initialData.title || '',
         email: initialData.email || '',
         github: initialData.github || '',
-        twitter: initialData.twitter || ''
+        twitter: initialData.twitter || '',
+        zenn: initialData.zenn || '',
+        note: initialData.note || ''
     });
     const [status, setStatus] = useState('');
+    const formatLinkText = (url) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -97,6 +100,32 @@ export default function EditContactClient({ initialData }) {
                         />
                     </div>
 
+                    <div className={styles.formGroup}>
+                        <label htmlFor="zenn" className={styles.label}>Zenn URL</label>
+                        <input
+                            type="url"
+                            id="zenn"
+                            name="zenn"
+                            value={formData.zenn}
+                            onChange={handleChange}
+                            className={styles.input}
+                            placeholder="https://zenn.dev/username"
+                        />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                        <label htmlFor="note" className={styles.label}>note URL</label>
+                        <input
+                            type="url"
+                            id="note"
+                            name="note"
+                            value={formData.note}
+                            onChange={handleChange}
+                            className={styles.input}
+                            placeholder="https://note.com/username"
+                        />
+                    </div>
+
                     <div className={styles.actions}>
                         <button type="submit" className={styles.saveButton}>
                             Save Changes
@@ -128,7 +157,7 @@ export default function EditContactClient({ initialData }) {
                             <div className={styles.previewItem}>
                                 <span className={styles.previewLabel}>GitHub</span>
                                 <a href={formData.github} target="_blank" rel="noopener noreferrer" className={styles.previewLink}>
-                                    {formData.github.replace('https://', '')}
+                                    {formatLinkText(formData.github)}
                                 </a>
                             </div>
                         )}
@@ -136,7 +165,23 @@ export default function EditContactClient({ initialData }) {
                             <div className={styles.previewItem}>
                                 <span className={styles.previewLabel}>Twitter / X</span>
                                 <a href={formData.twitter} target="_blank" rel="noopener noreferrer" className={styles.previewLink}>
-                                    {formData.twitter.replace('https://', '')}
+                                    {formatLinkText(formData.twitter)}
+                                </a>
+                            </div>
+                        )}
+                        {formData.zenn && (
+                            <div className={styles.previewItem}>
+                                <span className={styles.previewLabel}>Zenn</span>
+                                <a href={formData.zenn} target="_blank" rel="noopener noreferrer" className={styles.previewLink}>
+                                    {formatLinkText(formData.zenn)}
+                                </a>
+                            </div>
+                        )}
+                        {formData.note && (
+                            <div className={styles.previewItem}>
+                                <span className={styles.previewLabel}>note</span>
+                                <a href={formData.note} target="_blank" rel="noopener noreferrer" className={styles.previewLink}>
+                                    {formatLinkText(formData.note)}
                                 </a>
                             </div>
                         )}

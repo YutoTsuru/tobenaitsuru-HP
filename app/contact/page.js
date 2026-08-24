@@ -6,7 +6,8 @@ export const revalidate = 0;
 
 export default async function Contact() {
     const content = await getContent();
-    const { title, email, github, twitter } = content?.contact || {};
+    const { title, email, github, twitter, zenn, note } = content?.contact || {};
+    const formatLinkText = (url) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
     return (
         <div className={styles.container}>
@@ -23,7 +24,7 @@ export default async function Contact() {
                     <div className={styles.item}>
                         <span className={styles.label}>GitHub</span>
                         <a href={github} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            {github.replace('https://', '')}
+                            {formatLinkText(github)}
                         </a>
                     </div>
                 )}
@@ -31,7 +32,23 @@ export default async function Contact() {
                     <div className={styles.item}>
                         <span className={styles.label}>Twitter / X</span>
                         <a href={twitter} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                            {twitter.replace('https://', '')}
+                            {formatLinkText(twitter)}
+                        </a>
+                    </div>
+                )}
+                {zenn && (
+                    <div className={styles.item}>
+                        <span className={styles.label}>Zenn</span>
+                        <a href={zenn} target="_blank" rel="noopener noreferrer" className={styles.link}>
+                            {formatLinkText(zenn)}
+                        </a>
+                    </div>
+                )}
+                {note && (
+                    <div className={styles.item}>
+                        <span className={styles.label}>note</span>
+                        <a href={note} target="_blank" rel="noopener noreferrer" className={styles.link}>
+                            {formatLinkText(note)}
                         </a>
                     </div>
                 )}
