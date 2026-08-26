@@ -8,9 +8,21 @@ import styles from './MakesBook.module.css';
 const FLIP_MS = 950;
 // 開いた本のページの起き上がり角度（左右対称に手前へ開く）
 const TILT = 6;
+// めくる紙が本から浮き上がる高さ
+const LIFT = 30;
 const AUTOPLAY_MS = 6000;
 const STACK_LEAVES = 12; // 本全体の紙の厚み（枚数の見え方）
 const MIN_LEAVES = 2;
+const DRAG_START_PX = 6; // これ以上動かしたらめくり始める
+const FLICK_VELOCITY = 0.5; // px/ms：勢いよく払ったら最後までめくる
+const SINGLE_PAGE_MQ = '(max-width: 760px)';
+// 紙束モード（スマホ）：横へ抜く割合と、抜けきるまでの進捗
+const SLIDE_PHASE = 0.6;
+const SLIDE_X = 62; // %
+const SLIDE_LIFT = 60; // px（手前へ持ち上がる）
+const SLIDE_BACK = -40; // px（束の後ろへ回る）
+const SLIDE_ROTATE = 7; // deg
+const SLIDE_TRAVEL = 0.62; // ページ幅に対する指の移動距離
 
 /**
  * ページの外側に重なる紙束（厚み）を box-shadow の層で作る。
@@ -27,6 +39,78 @@ function leafStack(count, dir) {
     return layers.join(', ');
 }
 
+/** 見開き用：めくり具合（0 = 右ページの位置 / 1 = 左ページの位置）から紙の姿勢を作る */
+function bookTransform(progress) {
+    const angle = TILT + progress * (180 - TILT * 2);
+    const lift = Math.sin(progress * Math.PI) * LIFT;
+    return `rotateY(${-angle}deg) translateZ(${lift}px)`;
+}
+
+/**
+ * 紙束用：一番手前の紙を横へ抜いて、そのまま束の後ろへ回す。
+ * 0 = 束の一番手前 / SLIDE_PHASE = 横に抜けきったところ / 1 = 束の一番後ろ
+ */
+function stackParts(progress) {
+    const slide = Math.sin((Math.min(progress, SLIDE_PHASE) / SLIDE_PHASE) * (Math.PI / 2));
+    const settle = progress <= SLIDE_PHASE ? 0 : (progress - SLIDE_PHASE) / (1 - SLIDE_PHASE);
+    return {
+        x: -SLIDE_X * (slide - settle),
+        z: 1 + slide * SLIDE_LIFT + settle * (SLIDE_BACK - SLIDE_LIFT - 1),
+        tilt: -SLIDE_ROTATE * (slide - settle),
+    };
+}
+
+function stackTransform(progress) {
+    const { x, z, tilt } = stackParts(progress);
+    return `translateX(${x.toFixed(2)}%) translateZ(${z.toFixed(2)}px) rotate(${tilt.toFixed(2)}deg)`;
+}
+
+/** 持ち上がった高さに応じて影を伸ばす（紙が浮けば影は遠く・淡く・ぼける） */
+function stackShadow(progress) {
+    const height = Math.max(stackParts(progress).z, 0);
+    const y = 1.5 + height * 0.22;
+    const blur = 5 + height * 0.5;
+    const alpha = 0.16 + Math.min(height / SLIDE_LIFT, 1) * 0.1;
+    // 1層目＝紙同士の接地影、2層目＝浮いた高さぶんの落ち影
+    return `0 1px 2px rgba(74, 59, 50, 0.16), 0 ${y.toFixed(1)}px ${blur.toFixed(1)}px rgba(74, 59, 50, ${alpha.toFixed(3)})`;
+}
+
+function transformAt(progress, single) {
+    return single ? stackTransform(progress) : bookTransform(progress);
+}
+
+/** 経路を等間隔にサンプリングしてキーフレームにする */
+function framesBetween(from, to, single) {
+    const steps = single ? 12 : 2;
+    return Array.from({ length: steps + 1 }, (_, i) => {
+        const offset = i / steps;
+        const progress = from + (to - from) * offset;
+        const frame = { transform: transformAt(progress, single), offset };
+        if (single) frame.boxShadow = stackShadow(progress);
+        return frame;
+    });
+}
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+function isSinglePage() {
+    return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia(SINGLE_PAGE_MQ).matches
+    );
+}
+
+function prefersReducedMotion() {
+    return (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
+}
+
 // SSR では useLayoutEffect が警告を出すので切り替える
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
@@ -37,7 +121,7 @@ function LeftPage({ item, index, total }) {
         <div className={styles.pageInner}>
             <div className={styles.photoFrame}>
                 {item.thumbnail ? (
-                    <img src={item.thumbnail} alt={item.title} className={styles.photo} />
+                    <img src={item.thumbnail} alt={item.title} className={styles.photo} draggable={false} />
                 ) : (
                     <div className={styles.noPhoto}>No Image</div>
                 )}
@@ -63,7 +147,7 @@ function RightPage({ item, index }) {
 
             {item.thumbnail && (
                 <div className={styles.mobilePhoto}>
-                    <img src={item.thumbnail} alt="" className={styles.photo} />
+                    <img src={item.thumbnail} alt="" className={styles.photo} draggable={false} />
                 </div>
             )}
 
@@ -92,33 +176,45 @@ export default function MakesBook({ items }) {
     const total = list.length;
 
     const [index, setIndex] = useState(0);
-    // flip: { dir: 'next' | 'prev', from, to }
+    // flip: { dir: 'next' | 'prev', from, to, mode: 'auto' | 'drag' }
     const [flip, setFlip] = useState(null);
     const [paused, setPaused] = useState(false);
+    const [dragging, setDragging] = useState(false);
+    const spreadRef = useRef(null);
     const sheetRef = useRef(null);
     const animRef = useRef(null);
+    const dragRef = useRef(null);
+
+    const nextIndex = useCallback(
+        (dir) => (dir === 'next' ? (index + 1) % total : (index - 1 + total) % total),
+        [index, total]
+    );
 
     const turn = useCallback(
         (dir) => {
             if (total < 2) return;
             setFlip((current) => {
                 if (current) return current; // めくり中は無視
-                const to = dir === 'next' ? (index + 1) % total : (index - 1 + total) % total;
-                return { dir, from: index, to };
+                return { dir, from: index, to: nextIndex(dir), mode: 'auto' };
             });
         },
-        [index, total]
+        [index, total, nextIndex]
     );
 
-    // めくりアニメーション（進む／戻るのどちらも同じ経路を逆再生する）
+    // ボタン／キー操作でのめくり（進む・戻るで同じ軌道を順・逆再生）
     useIsoLayoutEffect(() => {
         if (!flip) {
             if (animRef.current) {
                 animRef.current.cancel();
                 animRef.current = null;
             }
+            if (sheetRef.current) {
+                sheetRef.current.style.transform = '';
+                sheetRef.current.style.boxShadow = '';
+            }
             return undefined;
         }
+        if (flip.mode !== 'auto') return undefined;
 
         const el = sheetRef.current;
         const commit = () => {
@@ -131,22 +227,12 @@ export default function MakesBook({ items }) {
             return () => clearTimeout(id);
         }
 
-        const reduced =
-            typeof window !== 'undefined' &&
-            window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // 開いた本の傾きに合わせて、右ページ位置から左ページ位置へ半回転させる
-        const sequence = [
-            `rotateY(${-TILT}deg)`, // 右ページの位置
-            'rotateY(-90deg) translateZ(30px)', // 立ち上がった瞬間
-            `rotateY(${-180 + TILT}deg)`, // 左ページの位置
-        ];
-        const order = flip.dir === 'next' ? sequence : [...sequence].reverse();
-        const frames = order.map((transform, i) => ({ transform, offset: [0, 0.5, 1][i] }));
+        const single = isSinglePage();
+        const frames =
+            flip.dir === 'next' ? framesBetween(0, 1, single) : framesBetween(1, 0, single);
 
         const anim = el.animate(frames, {
-            duration: reduced ? 1 : FLIP_MS,
+            duration: prefersReducedMotion() ? 1 : FLIP_MS,
             easing: 'cubic-bezier(0.45, 0.05, 0.4, 1)',
             fill: 'forwards',
         });
@@ -165,6 +251,155 @@ export default function MakesBook({ items }) {
         const id = setTimeout(() => turn('next'), AUTOPLAY_MS);
         return () => clearTimeout(id);
     }, [paused, total, flip, turn]);
+
+    // ===== 指／マウスでページをつまんでめくる =====
+
+    /** 綴じ目の位置とページ幅（片ページ表示のときは綴じ目が左端） */
+    const geometry = useCallback(() => {
+        const rect = spreadRef.current.getBoundingClientRect();
+        const single = isSinglePage();
+        return {
+            rect,
+            gutterX: single ? rect.left : rect.left + rect.width / 2,
+            width: single ? rect.width : rect.width / 2,
+            single,
+        };
+    }, []);
+
+    /** 紙の端がポインタに付いてくるように、X座標からめくり具合を求める */
+    const progressFromX = useCallback((clientX, geo) => {
+        const ratio = clamp((clientX - geo.gutterX) / geo.width, -1, 1);
+        return Math.acos(ratio) / Math.PI;
+    }, []);
+
+    /** 紙束モード：指の移動距離をそのまま「後ろへ回す」進捗に割り当てる */
+    const stackProgress = useCallback((dx, dir, width) => {
+        const travel = SLIDE_TRAVEL * width;
+        return dir === 'next' ? clamp(-dx / travel, 0, 1) : 1 - clamp(dx / travel, 0, 1);
+    }, []);
+
+    const handlePointerDown = useCallback(
+        (event) => {
+            if (total < 2 || flip || dragRef.current) return;
+            if (event.pointerType === 'mouse' && event.button !== 0) return; // 左ボタンのみ
+            if (event.target.closest('a, button')) return;
+
+            const geo = geometry();
+            const relative = (event.clientX - geo.rect.left) / geo.rect.width;
+            const dir = relative < (geo.single ? 0.3 : 0.5) ? 'prev' : 'next';
+
+            dragRef.current = {
+                dir,
+                geo,
+                to: nextIndex(dir),
+                pointerId: event.pointerId,
+                startX: event.clientX,
+                lastX: event.clientX,
+                lastAt: performance.now(),
+                velocity: 0,
+                progress: dir === 'next' ? 0 : 1,
+                engaged: false,
+            };
+            setPaused(true);
+            event.currentTarget.setPointerCapture(event.pointerId);
+        },
+        [total, flip, geometry, nextIndex]
+    );
+
+    const handlePointerMove = useCallback(
+        (event) => {
+            const drag = dragRef.current;
+            if (!drag || event.pointerId !== drag.pointerId) return;
+
+            const dx = event.clientX - drag.startX;
+            if (!drag.engaged) {
+                if (Math.abs(dx) < DRAG_START_PX) return;
+                // 進むなら左へ、戻るなら右へ動かしたときだけ紙を持ち上げる
+                if ((drag.dir === 'next' && dx > 0) || (drag.dir === 'prev' && dx < 0)) return;
+                drag.engaged = true;
+                setDragging(true);
+                setFlip({ dir: drag.dir, from: index, to: drag.to, mode: 'drag' });
+            }
+
+            const now = performance.now();
+            drag.velocity = (event.clientX - drag.lastX) / Math.max(now - drag.lastAt, 1);
+            drag.lastX = event.clientX;
+            drag.lastAt = now;
+            drag.progress = drag.geo.single
+                ? stackProgress(dx, drag.dir, drag.geo.width)
+                : progressFromX(event.clientX, drag.geo);
+
+            if (sheetRef.current) {
+                sheetRef.current.style.transform = transformAt(drag.progress, drag.geo.single);
+                sheetRef.current.style.boxShadow = drag.geo.single ? stackShadow(drag.progress) : '';
+            }
+        },
+        [index, progressFromX, stackProgress]
+    );
+
+    const finishDrag = useCallback(
+        (event, cancelled) => {
+            const drag = dragRef.current;
+            if (!drag || event.pointerId !== drag.pointerId) return;
+            dragRef.current = null;
+            setPaused(false);
+            try {
+                event.currentTarget.releasePointerCapture(drag.pointerId);
+            } catch {
+                /* すでに解放済み */
+            }
+
+            // ほとんど動いていなければタップ扱いでめくる（縦スクロール等で中断されたときは何もしない）
+            if (!drag.engaged) {
+                if (!cancelled && Math.abs(event.clientX - drag.startX) < DRAG_START_PX) turn(drag.dir);
+                return;
+            }
+
+            setDragging(false);
+
+            const el = sheetRef.current;
+            const towardEnd =
+                (drag.dir === 'next' && drag.velocity < 0) || (drag.dir === 'prev' && drag.velocity > 0);
+            const flicked = Math.abs(drag.velocity) > FLICK_VELOCITY && towardEnd;
+            const passedHalf = drag.dir === 'next' ? drag.progress > 0.5 : drag.progress < 0.5;
+            const complete = !cancelled && (flicked || passedHalf);
+
+            const target = drag.dir === 'next' ? (complete ? 1 : 0) : complete ? 0 : 1;
+            const settle = () => {
+                if (complete) setIndex(drag.to);
+                setFlip(null);
+            };
+
+            if (!el || typeof el.animate !== 'function') {
+                settle();
+                return;
+            }
+
+            const anim = el.animate(framesBetween(drag.progress, target, drag.geo.single), {
+                duration: prefersReducedMotion()
+                    ? 1
+                    : Math.max(160, Math.round(FLIP_MS * Math.abs(target - drag.progress))),
+                easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
+                fill: 'forwards',
+            });
+            animRef.current = anim;
+            anim.onfinish = settle;
+        },
+        [turn]
+    );
+
+    const handleKeyDown = useCallback(
+        (event) => {
+            if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+                event.preventDefault();
+                turn('next');
+            } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+                event.preventDefault();
+                turn('prev');
+            }
+        },
+        [turn]
+    );
 
     if (total === 0) {
         return (
@@ -187,27 +422,45 @@ export default function MakesBook({ items }) {
     const leftLeaves = MIN_LEAVES + Math.round(ratio * (STACK_LEAVES - MIN_LEAVES * 2));
     const rightLeaves = STACK_LEAVES - leftLeaves;
 
+    const bookClass = [styles.book, total > 1 ? styles.bookGrabbable : '', dragging ? styles.bookDragging : '']
+        .filter(Boolean)
+        .join(' ');
     const sheetClass = `${styles.sheet}${flip ? ` ${styles.sheetVisible}` : ''}`;
 
     return (
         <div className={styles.bookWrapper}>
             <div
-                className={styles.book}
+                className={bookClass}
+                role="group"
+                aria-label="Makes の作品を収めた本。ドラッグまたは左右キーでページをめくれます"
+                tabIndex={0}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={(event) => finishDrag(event, false)}
+                onPointerCancel={(event) => finishDrag(event, true)}
+                onKeyDown={handleKeyDown}
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
-                onFocusCapture={() => setPaused(true)}
-                onBlurCapture={() => setPaused(false)}
+                onFocus={() => setPaused(true)}
+                onBlur={() => setPaused(false)}
             >
-                <div className={styles.spread}>
+                <div className={styles.spread} ref={spreadRef}>
+                    {total > 1 && (
+                        <>
+                            <span className={`${styles.underSheet} ${styles.underSheetC}`} aria-hidden="true" />
+                            <span className={`${styles.underSheet} ${styles.underSheetB}`} aria-hidden="true" />
+                            <span className={`${styles.underSheet} ${styles.underSheetA}`} aria-hidden="true" />
+                        </>
+                    )}
                     <div
                         className={`${styles.page} ${styles.pageLeft}`}
-                        style={{ boxShadow: leafStack(leftLeaves, -1) }}
+                        style={{ '--leaf-stack': leafStack(leftLeaves, -1) }}
                     >
                         <LeftPage item={list[staticLeft]} index={staticLeft} total={total} />
                     </div>
                     <div
                         className={`${styles.page} ${styles.pageRight}`}
-                        style={{ boxShadow: leafStack(rightLeaves, 1) }}
+                        style={{ '--leaf-stack': leafStack(rightLeaves, 1) }}
                     >
                         <RightPage item={list[staticRight]} index={staticRight} />
                     </div>
@@ -227,46 +480,14 @@ export default function MakesBook({ items }) {
                     <span className={styles.gutter} aria-hidden="true" />
                 </div>
 
-                {total > 1 && (
-                    <>
-                        <button
-                            type="button"
-                            className={`${styles.corner} ${styles.cornerPrev}`}
-                            onClick={() => turn('prev')}
-                            aria-label="前のページ"
-                        />
-                        <button
-                            type="button"
-                            className={`${styles.corner} ${styles.cornerNext}`}
-                            onClick={() => turn('next')}
-                            aria-label="次のページ"
-                        />
-                    </>
-                )}
+                {total > 1 && <span className={styles.curl} aria-hidden="true" />}
             </div>
 
             <div className={styles.controls}>
-                <button
-                    type="button"
-                    className={styles.navButton}
-                    onClick={() => turn('prev')}
-                    disabled={total < 2}
-                    aria-label="前のページ"
-                >
-                    ‹
-                </button>
-                <span className={styles.counter}>
+                <span className={styles.counter} aria-live="polite">
                     {String(index + 1).padStart(2, '0')} <em>/</em> {String(total).padStart(2, '0')}
                 </span>
-                <button
-                    type="button"
-                    className={styles.navButton}
-                    onClick={() => turn('next')}
-                    disabled={total < 2}
-                    aria-label="次のページ"
-                >
-                    ›
-                </button>
+                {total > 1 && <span className={styles.hint}>ページの端をつまんでめくる</span>}
             </div>
 
             <div className={styles.moreButtonWrapper}>
