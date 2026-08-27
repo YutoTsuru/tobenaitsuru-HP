@@ -4,6 +4,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 
 import BackgroundGears from '../components/BackgroundGears';
+import GateIntro from '../components/GateIntro';
 
 export const metadata = {
   title: 'Tobenaitsuru Portfolio',
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body>
+        <GateIntro />
         <BackgroundGears />
         <header className="site-header">
           <div className="container header-container">
