@@ -136,13 +136,30 @@ function LeftPage({ item, index, total }) {
     );
 }
 
-/** 右ページ（作品の記述） */
+/** 右ページ（作品の記述）。見出しが作品へのリンクになる */
 function RightPage({ item, index }) {
     if (!item) return <div className={styles.pageInner} />;
+
     return (
         <div className={styles.pageInner}>
             <p className={styles.chapter}>Makes</p>
-            <h3 className={styles.title}>{item.title}</h3>
+
+            <h3 className={styles.title}>
+                {item.externalUrl ? (
+                    <Link
+                        href={item.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.titleLink}
+                        aria-label={`${item.title} を新しいタブで開く`}
+                    >
+                        {item.title}
+                        <span className={styles.openMark}>↗</span>
+                    </Link>
+                ) : (
+                    item.title
+                )}
+            </h3>
             <span className={styles.rule} aria-hidden="true" />
 
             {item.thumbnail && (
@@ -157,15 +174,6 @@ function RightPage({ item, index }) {
                 <TechBadgeList techStack={item.techStack} limit={4} />
             </div>
 
-            <div className={styles.pageFooter}>
-                {item.externalUrl ? (
-                    <Link href={item.externalUrl} target="_blank" className={styles.link}>
-                        View Project →
-                    </Link>
-                ) : (
-                    <span className={styles.noLink}>View Details</span>
-                )}
-            </div>
             <span className={styles.folio}>{index * 2 + 2}</span>
         </div>
     );
@@ -184,6 +192,8 @@ export default function MakesBook({ items }) {
     const sheetRef = useRef(null);
     const animRef = useRef(null);
     const dragRef = useRef(null);
+    // ドラッグでめくったときは、そのまま続くクリック（リンク）を打ち消す
+    const suppressClickRef = useRef(false);
 
     const nextIndex = useCallback(
         (dir) => (dir === 'next' ? (index + 1) % total : (index - 1 + total) % total),
@@ -280,9 +290,10 @@ export default function MakesBook({ items }) {
 
     const handlePointerDown = useCallback(
         (event) => {
+            suppressClickRef.current = false;
             if (total < 2 || flip || dragRef.current) return;
             if (event.pointerType === 'mouse' && event.button !== 0) return; // 左ボタンのみ
-            if (event.target.closest('a, button')) return;
+            if (event.target.closest('button')) return;
 
             const geo = geometry();
             const relative = (event.clientX - geo.rect.left) / geo.rect.width;
@@ -291,6 +302,9 @@ export default function MakesBook({ items }) {
             dragRef.current = {
                 dir,
                 geo,
+                // リンクの上から始めた場合、動かさずに離したらリンクを優先する
+                onLink: Boolean(event.target.closest('a')),
+                moved: false,
                 to: nextIndex(dir),
                 pointerId: event.pointerId,
                 startX: event.clientX,
@@ -312,6 +326,7 @@ export default function MakesBook({ items }) {
             if (!drag || event.pointerId !== drag.pointerId) return;
 
             const dx = event.clientX - drag.startX;
+            if (Math.abs(dx) >= DRAG_START_PX) drag.moved = true;
             if (!drag.engaged) {
                 if (Math.abs(dx) < DRAG_START_PX) return;
                 // 進むなら左へ、戻るなら右へ動かしたときだけ紙を持ち上げる
@@ -349,9 +364,12 @@ export default function MakesBook({ items }) {
                 /* すでに解放済み */
             }
 
-            // ほとんど動いていなければタップ扱いでめくる（縦スクロール等で中断されたときは何もしない）
+            suppressClickRef.current = drag.moved;
+
+            // ほとんど動いていなければタップ扱いでめくる。
+            // ただしリンクの上なら、そのリンクを開く方を優先する
             if (!drag.engaged) {
-                if (!cancelled && Math.abs(event.clientX - drag.startX) < DRAG_START_PX) turn(drag.dir);
+                if (!cancelled && !drag.onLink && !drag.moved) turn(drag.dir);
                 return;
             }
 
@@ -434,6 +452,12 @@ export default function MakesBook({ items }) {
                 role="group"
                 aria-label="Makes の作品を収めた本。ドラッグまたは左右キーでページをめくれます"
                 tabIndex={0}
+                onClickCapture={(event) => {
+                    if (!suppressClickRef.current) return;
+                    suppressClickRef.current = false;
+                    event.preventDefault();
+                    event.stopPropagation();
+                }}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={(event) => finishDrag(event, false)}
