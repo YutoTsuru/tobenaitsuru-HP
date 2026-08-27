@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import { GEAR_PATH } from './Gear';
 import styles from './GateIntro.module.css';
 
-// CSS 側の演出（扉が開ききる 3.4s ＋ 溶暗 0.45s）に合わせた撤去タイミング
-const TOTAL_MS = 3850;
+// CSS 側の演出（扉が開ききる 4.8s ＋ 溶暗 0.45s）に合わせた撤去タイミング
+const TOTAL_MS = 5250;
 const SKIP_MS = 320;
 
 /** 扉に埋め込まれた歯車。外側の span が始動の加速、内側の svg が定速回転を受け持つ */
@@ -25,6 +25,30 @@ function DoorGear({ size, spin, delay = 0, reverse = false, tone = 'brass', styl
                 <path d={GEAR_PATH} fill="currentColor" />
             </svg>
         </span>
+    );
+}
+
+/** 鋼板・パイプ・補強梁・油圧ピストンといった扉の構造物 */
+function DoorFrame() {
+    return (
+        <>
+            <span className={styles.grain} />
+            <span className={styles.bolts} />
+            <span className={`${styles.pipe} ${styles.pipeOuter}`} />
+            <span className={`${styles.pipe} ${styles.pipeSlim} ${styles.pipeInner}`} />
+            <span className={`${styles.rib} ${styles.ribTop}`} />
+            <span className={`${styles.rib} ${styles.ribBottom}`} />
+            <span className={`${styles.stripe} ${styles.stripeTop}`} />
+            <span className={`${styles.stripe} ${styles.stripeBottom}`} />
+            <span className={`${styles.piston} ${styles.pistonTop}`}>
+                <span className={styles.pistonRod} />
+                <span className={styles.pistonBody} />
+            </span>
+            <span className={`${styles.piston} ${styles.pistonBottom}`}>
+                <span className={styles.pistonRod} />
+                <span className={styles.pistonBody} />
+            </span>
+        </>
     );
 }
 
@@ -73,28 +97,24 @@ export default function GateIntro() {
             aria-hidden="true"
         >
             <div className={`${styles.panel} ${styles.panelLeft}`}>
-                <span className={styles.rivets} />
-                <span className={`${styles.stripe} ${styles.stripeTop}`} />
-                <span className={`${styles.stripe} ${styles.stripeBottom}`} />
-                <DoorGear size={620} spin={26} tone="brass" style={{ top: '50%', right: '-310px', marginTop: '-310px' }} />
-                <DoorGear size={200} spin={9} reverse tone="copper" style={{ top: '14%', right: '16%' }} />
-                <DoorGear size={130} spin={6} tone="steel" style={{ top: '30%', right: '4%' }} />
-                <DoorGear size={280} spin={18} reverse tone="steel" style={{ bottom: '6%', left: '8%' }} />
-                <DoorGear size={110} spin={5} tone="neon" style={{ bottom: '26%', left: '30%' }} />
-                <DoorGear size={170} spin={11} reverse tone="brass" style={{ top: '6%', left: '18%' }} />
+                <DoorFrame />
+                <DoorGear size={620} spin={26} tone="steel" style={{ top: '50%', right: '-310px', marginTop: '-310px' }} />
+                <DoorGear size={200} spin={9} reverse tone="brass" style={{ top: '26%', right: '18%' }} />
+                <DoorGear size={130} spin={6} tone="steel" style={{ top: '38%', right: '5%' }} />
+                <DoorGear size={280} spin={18} reverse tone="steel" style={{ bottom: '4%', left: '10%' }} />
+                <DoorGear size={110} spin={5} tone="neon" style={{ bottom: '24%', left: '32%' }} />
+                <DoorGear size={170} spin={11} reverse tone="copper" style={{ top: '2%', left: '20%' }} />
                 <span className={styles.edge} />
             </div>
 
             <div className={`${styles.panel} ${styles.panelRight}`}>
-                <span className={styles.rivets} />
-                <span className={`${styles.stripe} ${styles.stripeTop}`} />
-                <span className={`${styles.stripe} ${styles.stripeBottom}`} />
-                <DoorGear size={620} spin={26} reverse tone="brass" style={{ top: '50%', left: '-310px', marginTop: '-310px' }} />
-                <DoorGear size={200} spin={9} tone="copper" style={{ top: '18%', left: '14%' }} />
-                <DoorGear size={130} spin={6} reverse tone="steel" style={{ top: '36%', left: '3%' }} />
-                <DoorGear size={280} spin={18} tone="steel" style={{ bottom: '10%', right: '6%' }} />
-                <DoorGear size={110} spin={5} reverse tone="neon" style={{ bottom: '30%', right: '28%' }} />
-                <DoorGear size={170} spin={11} tone="brass" style={{ top: '4%', right: '20%' }} />
+                <DoorFrame />
+                <DoorGear size={620} spin={26} reverse tone="steel" style={{ top: '50%', left: '-310px', marginTop: '-310px' }} />
+                <DoorGear size={200} spin={9} tone="brass" style={{ top: '30%', left: '16%' }} />
+                <DoorGear size={130} spin={6} reverse tone="steel" style={{ top: '42%', left: '4%' }} />
+                <DoorGear size={280} spin={18} tone="steel" style={{ bottom: '8%', right: '8%' }} />
+                <DoorGear size={110} spin={5} reverse tone="neon" style={{ bottom: '28%', right: '30%' }} />
+                <DoorGear size={170} spin={11} tone="copper" style={{ top: '1%', right: '22%' }} />
                 <span className={styles.edge} />
             </div>
 
