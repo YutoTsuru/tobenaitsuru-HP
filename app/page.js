@@ -28,8 +28,8 @@ export default async function Home() {
 
             <div className={styles.container}>
                 <div className={styles.headerSection}>
-                    <h1 className={styles.subtitle}>{subtitle}</h1>
-                    <span className={styles.rule} aria-hidden="true" />
+                    {/* 主役は本。名乗りは読み上げと検索エンジンのためだけに置く */}
+                    <h1 className={styles.pageName}>Tobenaitsuru — {subtitle}</h1>
 
                     <div className={styles.navLinks}>
                         <Link href="/about" className={styles.navItem}>
