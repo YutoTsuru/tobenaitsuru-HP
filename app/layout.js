@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
         <BackgroundGears />
         <header className="site-header">
           <div className="container header-container">
-            <h1 className="logo">
+            <div className="logo">
               <a href="/" style={{ display: 'flex', alignItems: 'center' }}>
                 <Image
                   src="/assets/logo.png"
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
                 />
                 Tobenaitsuru
               </a>
-            </h1>
+            </div>
             <Navigation />
           </div>
         </header>
