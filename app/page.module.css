@@ -55,25 +55,29 @@
     animation: fadeIn 1s ease-out;
 }
 
-.title {
-    font-size: 4.5rem;
-    font-weight: 800;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.1em;
-    background: linear-gradient(135deg, var(--c-text-primary) 0%, #888 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    line-height: 1.1;
+.subtitle {
+    /* サイト名はヘッダーが持つ。ここは「何をする人か」を主役にする */
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 4.6vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: 0.08em;
+    color: var(--c-text-primary);
+    margin: 0;
+    text-wrap: balance;
 }
 
-.subtitle {
-    font-size: 1.2rem;
-    color: var(--c-accent-1);
-    letter-spacing: 0.3em;
-    font-weight: 400;
-    text-transform: uppercase;
-    margin-bottom: 3rem;
+/* 見出しの下の箔押し罫線。本の中の罫線と揃えている */
+.rule {
+    display: block;
+    width: 72px;
+    height: 2px;
+    margin: 1.3rem auto 2.2rem;
+    background: linear-gradient(90deg,
+            rgba(255, 177, 66, 0) 0%,
+            var(--c-gear-gold) 35%,
+            var(--c-accent-1) 65%,
+            rgba(255, 107, 26, 0) 100%);
 }
 
 /* Navigation Links Style */
@@ -171,12 +175,8 @@
 }
 
 @media (max-width: 768px) {
-    .title {
-        font-size: 3rem;
-    }
-
-    .subtitle {
-        font-size: 0.9rem;
+    .rule {
+        margin: 1rem auto 1.8rem;
     }
 
     .navLinks {

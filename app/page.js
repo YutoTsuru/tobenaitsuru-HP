@@ -9,7 +9,7 @@ export const revalidate = 0;
 
 export default async function Home() {
     const content = await getContent();
-    const { title, subtitle } = content?.home || { title: 'Tobenaitsuru', subtitle: 'Portfolio' };
+    const { subtitle } = content?.home || { subtitle: 'Thinking, Designing, Making' };
     // 下書き(isPublished: false)は公開ページに表示しない
     const makesItems = (content?.makes?.items || []).filter((item) => item.isPublished !== false);
 
@@ -28,8 +28,8 @@ export default async function Home() {
 
             <div className={styles.container}>
                 <div className={styles.headerSection}>
-                    <h1 className={styles.title}>{title}</h1>
-                    <p className={styles.subtitle}>{subtitle}</p>
+                    <h1 className={styles.subtitle}>{subtitle}</h1>
+                    <span className={styles.rule} aria-hidden="true" />
 
                     <div className={styles.navLinks}>
                         <Link href="/about" className={styles.navItem}>
