@@ -12,6 +12,8 @@ const TILT = 6;
 // めくる紙が本から浮き上がる高さ
 const LIFT = 30;
 const AUTOPLAY_MS = 6000;
+// 最後に触ってから、自動めくりを再開するまでの間
+const IDLE_MS = 12000;
 const STACK_LEAVES = 12; // 本全体の紙の厚み（枚数の見え方）
 const MIN_LEAVES = 2;
 const DRAG_START_PX = 6; // これ以上動かしたらめくり始める
@@ -187,7 +189,10 @@ export default function MakesBook({ items }) {
     const [index, setIndex] = useState(0);
     // flip: { dir: 'next' | 'prev', from, to, mode: 'auto' | 'drag' }
     const [flip, setFlip] = useState(null);
-    const [paused, setPaused] = useState(false);
+    // ポインタが本の上にある間は止める（読んでいる最中なので）
+    const [hovering, setHovering] = useState(false);
+    // 最後に操作した時刻。ここから一定時間空いたら自動めくりを再開する
+    const [activityAt, setActivityAt] = useState(0);
     const [dragging, setDragging] = useState(false);
     const [soundOff, setSoundOff] = useState(false);
     const spreadRef = useRef(null);
@@ -265,12 +270,16 @@ export default function MakesBook({ items }) {
         };
     }, [flip]);
 
-    // 自動でページをめくる
+    const noteActivity = useCallback(() => setActivityAt(Date.now()), []);
+
+    // 自動でページをめくる。操作直後はしばらく待ってから再開する
     useEffect(() => {
-        if (paused || total < 2 || flip) return;
-        const id = setTimeout(() => turn('next', { silent: true }), AUTOPLAY_MS);
+        if (hovering || total < 2 || flip) return;
+        const sinceActivity = activityAt ? Date.now() - activityAt : Infinity;
+        const wait = Math.max(AUTOPLAY_MS, IDLE_MS - sinceActivity);
+        const id = setTimeout(() => turn('next', { silent: true }), wait);
         return () => clearTimeout(id);
-    }, [paused, total, flip, turn]);
+    }, [hovering, total, flip, activityAt, turn]);
 
     // ===== 指／マウスでページをつまんでめくる =====
 
@@ -309,6 +318,7 @@ export default function MakesBook({ items }) {
             const relative = (event.clientX - geo.rect.left) / geo.rect.width;
             const dir = relative < (geo.single ? 0.3 : 0.5) ? 'prev' : 'next';
 
+            noteActivity();
             dragRef.current = {
                 dir,
                 geo,
@@ -324,10 +334,9 @@ export default function MakesBook({ items }) {
                 progress: dir === 'next' ? 0 : 1,
                 engaged: false,
             };
-            setPaused(true);
             event.currentTarget.setPointerCapture(event.pointerId);
         },
-        [total, flip, geometry, nextIndex]
+        [total, flip, geometry, nextIndex, noteActivity]
     );
 
     const handlePointerMove = useCallback(
@@ -368,7 +377,7 @@ export default function MakesBook({ items }) {
             const drag = dragRef.current;
             if (!drag || event.pointerId !== drag.pointerId) return;
             dragRef.current = null;
-            setPaused(false);
+            noteActivity();
             try {
                 event.currentTarget.releasePointerCapture(drag.pointerId);
             } catch {
@@ -417,11 +426,12 @@ export default function MakesBook({ items }) {
             animRef.current = anim;
             anim.onfinish = settle;
         },
-        [turn]
+        [turn, noteActivity]
     );
 
     const handleKeyDown = useCallback(
         (event) => {
+            noteActivity();
             if (event.key === 'ArrowRight' || event.key === 'PageDown') {
                 event.preventDefault();
                 turn('next');
@@ -430,7 +440,7 @@ export default function MakesBook({ items }) {
                 turn('prev');
             }
         },
-        [turn]
+        [turn, noteActivity]
     );
 
     if (total === 0) {
@@ -477,10 +487,11 @@ export default function MakesBook({ items }) {
                 onPointerUp={(event) => finishDrag(event, false)}
                 onPointerCancel={(event) => finishDrag(event, true)}
                 onKeyDown={handleKeyDown}
-                onMouseEnter={() => setPaused(true)}
-                onMouseLeave={() => setPaused(false)}
-                onFocus={() => setPaused(true)}
-                onBlur={() => setPaused(false)}
+                onPointerEnter={(event) => {
+                    // タッチでは指を離すと pointerleave が来るので、止まったままにならない
+                    if (event.pointerType === 'mouse') setHovering(true);
+                }}
+                onPointerLeave={() => setHovering(false)}
             >
                 <div className={styles.spread} ref={spreadRef}>
                     {total > 1 && (
