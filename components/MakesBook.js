@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import TechBadgeList from './TechBadgeList';
+import { isMuted, playRustle, setMuted } from './paperSound';
 import styles from './MakesBook.module.css';
 
 const FLIP_MS = 950;
@@ -188,6 +189,7 @@ export default function MakesBook({ items }) {
     const [flip, setFlip] = useState(null);
     const [paused, setPaused] = useState(false);
     const [dragging, setDragging] = useState(false);
+    const [soundOff, setSoundOff] = useState(false);
     const spreadRef = useRef(null);
     const sheetRef = useRef(null);
     const animRef = useRef(null);
@@ -200,11 +202,19 @@ export default function MakesBook({ items }) {
         [index, total]
     );
 
+    // 保存されているミュート設定を反映する
+    useEffect(() => {
+        setSoundOff(isMuted());
+    }, []);
+
     const turn = useCallback(
-        (dir) => {
+        (dir, options) => {
             if (total < 2) return;
+            const silent = Boolean(options && options.silent);
             setFlip((current) => {
                 if (current) return current; // めくり中は無視
+                // 紙が動き出すのに合わせて鳴らす（自動めくりは鳴らさない）
+                if (!silent) playRustle(0.9);
                 return { dir, from: index, to: nextIndex(dir), mode: 'auto' };
             });
         },
@@ -258,7 +268,7 @@ export default function MakesBook({ items }) {
     // 自動でページをめくる
     useEffect(() => {
         if (paused || total < 2 || flip) return;
-        const id = setTimeout(() => turn('next'), AUTOPLAY_MS);
+        const id = setTimeout(() => turn('next', { silent: true }), AUTOPLAY_MS);
         return () => clearTimeout(id);
     }, [paused, total, flip, turn]);
 
@@ -333,6 +343,7 @@ export default function MakesBook({ items }) {
                 if ((drag.dir === 'next' && dx > 0) || (drag.dir === 'prev' && dx < 0)) return;
                 drag.engaged = true;
                 setDragging(true);
+                playRustle(0.5); // 紙を持ち上げる音
                 setFlip({ dir: drag.dir, from: index, to: drag.to, mode: 'drag' });
             }
 
@@ -381,6 +392,9 @@ export default function MakesBook({ items }) {
             const flicked = Math.abs(drag.velocity) > FLICK_VELOCITY && towardEnd;
             const passedHalf = drag.dir === 'next' ? drag.progress > 0.5 : drag.progress < 0.5;
             const complete = !cancelled && (flicked || passedHalf);
+
+            // 払った勢いが強いほど大きく鳴らす
+            playRustle(complete ? 0.8 + Math.min(Math.abs(drag.velocity), 1.5) * 0.25 : 0.3);
 
             const target = drag.dir === 'next' ? (complete ? 1 : 0) : complete ? 0 : 1;
             const settle = () => {
@@ -508,9 +522,26 @@ export default function MakesBook({ items }) {
             </div>
 
             <div className={styles.controls}>
-                <span className={styles.counter} aria-live="polite">
-                    {String(index + 1).padStart(2, '0')} <em>/</em> {String(total).padStart(2, '0')}
-                </span>
+                <div className={styles.counterRow}>
+                    <span className={styles.counter} aria-live="polite">
+                        {String(index + 1).padStart(2, '0')} <em>/</em> {String(total).padStart(2, '0')}
+                    </span>
+                    <button
+                        type="button"
+                        className={styles.soundToggle}
+                        onClick={() => {
+                            const next = !soundOff;
+                            setMuted(next);
+                            setSoundOff(next);
+                            if (!next) playRustle(0.6); // 音を戻したら手応えを返す
+                        }}
+                        aria-pressed={soundOff}
+                        aria-label={soundOff ? 'めくる音を鳴らす' : 'めくる音を消す'}
+                        title={soundOff ? 'めくる音を鳴らす' : 'めくる音を消す'}
+                    >
+                        {soundOff ? '🔇' : '🔊'}
+                    </button>
+                </div>
                 {total > 1 && <span className={styles.hint}>ページの端をつまんでめくる</span>}
             </div>
 
