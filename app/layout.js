@@ -4,7 +4,7 @@ import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 
 import BackgroundGears from '../components/BackgroundGears';
-import GateIntro from '../components/GateIntro';
+import Intro from '../components/Intro';
 
 export const metadata = {
   title: 'Tobenaitsuru Portfolio',
@@ -15,11 +15,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body>
-        <GateIntro />
+        <Intro />
         <BackgroundGears />
         <header className="site-header">
           <div className="container header-container">
-            <h1 className="logo">
+            <div className="logo">
               <a href="/" style={{ display: 'flex', alignItems: 'center' }}>
                 <Image
                   src="/assets/logo.png"
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
                 />
                 Tobenaitsuru
               </a>
-            </h1>
+            </div>
             <Navigation />
           </div>
         </header>
