@@ -60,7 +60,7 @@
     position: relative;
     width: clamp(140px, 34vw, 220px);
     height: 1px;
-    background: rgba(74, 59, 50, 0.16);
+    background: color-mix(in srgb, var(--c-text-primary) 16%, transparent);
     overflow: hidden;
 }
 
@@ -80,8 +80,19 @@
 }
 
 /* ===== スキップ ===== */
+/*
+ * intro-out とは別の名前にする。同じ animation-name のまま秒数だけ差し替えても
+ * ブラウザは走っているアニメーションを仕組み直すだけで、頭から再生しない。
+ */
 .skipping {
-    animation: intro-out 0.24s ease forwards;
+    animation: intro-cut 0.24s ease forwards;
+}
+
+@keyframes intro-cut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
 /* ===== 動きを減らす設定のときは、軽く溶暗するだけ ===== */

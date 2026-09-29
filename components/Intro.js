@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './Intro.module.css';
 
-// CSS 側の演出（名乗り 1.2s ＋ 溶暗 0.4s）に合わせた撤去タイミング
-const TOTAL_MS = 1650;
-const SKIP_MS = 260;
+/*
+ * 撤去は CSS の animationend で行う。演出の長さは CSS だけが持っていて、
+ * ここの定数は「イベントを取りこぼしたとき」の保険にしか使わない。
+ * そのため多少ずれても見た目には出ない。
+ */
+const FALLBACK_MS = 2400;
+const SKIP_FALLBACK_MS = 600;
 
 /**
  * 起動時の名乗り。
@@ -18,6 +22,8 @@ export default function Intro() {
     const disabled = Boolean(pathname && pathname.startsWith('/admin'));
     const [open, setOpen] = useState(true);
     const [skipping, setSkipping] = useState(false);
+    // 溶暗が始まったか。始まった後のスキップは画面を巻き戻すので受け付けない
+    const leaving = useRef(false);
 
     // 演出中はスクロールを止める
     useEffect(() => {
@@ -29,17 +35,27 @@ export default function Intro() {
         };
     }, [open, disabled]);
 
-    // 溶暗しきったら DOM から取り除く
+    /*
+     * 保険のタイマー。animationend が来ない環境（アニメーションを切っている等）でも
+     * 必ず撤去されるようにする。ハイドレーションが遅れても演出の終わりから離れないよう、
+     * マウント時刻ではなくページ読み込みからの経過で残り時間を測る。
+     */
     useEffect(() => {
         if (!open || disabled) return undefined;
-        const id = setTimeout(() => setOpen(false), skipping ? SKIP_MS : TOTAL_MS);
+        const remaining = skipping
+            ? SKIP_FALLBACK_MS
+            : Math.max(0, FALLBACK_MS - performance.now());
+        const id = setTimeout(() => setOpen(false), remaining);
         return () => clearTimeout(id);
     }, [open, skipping, disabled]);
 
     // クリック・キー操作でスキップ
     useEffect(() => {
         if (!open || skipping || disabled) return undefined;
-        const skip = () => setSkipping(true);
+        const skip = () => {
+            if (leaving.current) return;
+            setSkipping(true);
+        };
         window.addEventListener('pointerdown', skip);
         window.addEventListener('keydown', skip);
         return () => {
@@ -48,6 +64,17 @@ export default function Intro() {
         };
     }, [open, skipping, disabled]);
 
+    // 名乗りと線のアニメーションも上がってくるので、覆い自身の分だけを見る
+    const handleAnimationStart = useCallback((event) => {
+        if (event.target !== event.currentTarget) return;
+        leaving.current = true;
+    }, []);
+
+    const handleAnimationEnd = useCallback((event) => {
+        if (event.target !== event.currentTarget) return;
+        setOpen(false);
+    }, []);
+
     if (!open || disabled) return null;
 
     return (
@@ -55,6 +82,8 @@ export default function Intro() {
             className={`${styles.overlay}${skipping ? ` ${styles.skipping}` : ''}`}
             role="presentation"
             aria-hidden="true"
+            onAnimationStart={handleAnimationStart}
+            onAnimationEnd={handleAnimationEnd}
         >
             <div className={styles.mark}>
                 <span className={styles.name}>Tobenaitsuru</span>

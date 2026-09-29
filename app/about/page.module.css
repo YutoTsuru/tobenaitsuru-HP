@@ -37,3 +37,19 @@
     border-left: 4px solid var(--c-accent-3);
     margin-bottom: 2rem;
 }
+
+/*
+ * CSS Modules は animation-name もスコープするので、globals.css の fadeIn には
+ * 当たらない。このモジュール内に実体を置く。
+ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
